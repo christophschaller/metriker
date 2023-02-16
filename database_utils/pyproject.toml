@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "database-utils"
+version = "0.1.0"
+description = ""
+authors = ["chris <58859629+christophschaller@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "database_utils"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+sqlalchemy = "^2.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
