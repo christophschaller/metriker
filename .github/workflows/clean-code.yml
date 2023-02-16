@@ -2,7 +2,7 @@ name: Black & Pylint
 on: [push]
 
 jobs:
-  black:
+  black & pylint:
     runs-on: ubuntu-latest
     steps:
       # check-out repo and set-up python
