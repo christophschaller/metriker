@@ -9,6 +9,8 @@ packages = [{include = "database_utils"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 sqlalchemy = "^2.0.2"
+cryptography = "^39.0.1"
+flet = "^0.4.0"
 
 
 [build-system]

@@ -7,6 +7,8 @@ import logging
 from dataclasses import dataclass
 from typing import List
 
+from flet.security import encrypt, decrypt
+
 from database_utils import DatabaseConnector
 from database_utils.schema import User
 
@@ -32,6 +34,27 @@ class StravaUserHandler(DatabaseConnector):
     """
     StravaUserHandler wraps basic data interactions regarding users pulled from strava.
     """
+
+    def __init__(
+        self,
+        secret_key: str,
+        user: str = None,
+        password: str = None,
+        host: str = None,
+        port: str = None,
+        database: str = None,
+    ):
+        """
+        Args:
+            secret_key: secret key for encryption of user tokens
+            user: username to connect to the data service
+            password: ...
+            host: host url
+            port: service port
+            database: name of the target data
+        """
+        super().__init__(user=user, password=password, host=host, port=port, database=database)
+        self.secret_key = secret_key
 
     def __getitem__(self, key: str) -> StravaUser:
         """
@@ -63,7 +86,7 @@ class StravaUserHandler(DatabaseConnector):
         logger.info("Get user: %s", user_id)
         user = self.session.query(User).filter(User.id == user_id).first()
         if user:
-            return StravaUser(id=user.id, name=user.name, refresh_token=user.refresh_token)
+            return StravaUser(id=user.id, name=user.name, refresh_token=decrypt(user.refresh_token, self.secret_key))
         return None
 
     def add(self, user: StravaUser) -> None:
@@ -77,7 +100,7 @@ class StravaUserHandler(DatabaseConnector):
             None
         """
         logger.info("Add user: %s", user.id)
-        new_user = User(id=user.id, name=user.name, refresh_token=user.refresh_token)
+        new_user = User(id=user.id, name=user.name, refresh_token=encrypt(user.refresh_token, self.secret_key))
         self.insert(new_user)
 
     def update(self, user: StravaUser) -> None:
@@ -95,7 +118,7 @@ class StravaUserHandler(DatabaseConnector):
             {
                 User.id: user.id,
                 User.name: user.name,
-                User.refresh_token: user.refresh_token,
+                User.refresh_token: encrypt(user.refresh_token, self.secret_key),
             }
         )
         self.session.commit()
