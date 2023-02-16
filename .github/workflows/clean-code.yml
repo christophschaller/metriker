@@ -41,4 +41,4 @@ jobs:
       - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       # run pylint
-      - run: poetry run pylint --recursive=y --rcfile=./pyproject.toml .
+      - run: poetry run pylint --ignore=.venv --recursive=y --rcfile=./pyproject.toml .
