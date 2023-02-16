@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "metriker"
+version = "0.1.0"
+description = ""
+authors = ["chris <58859629+christophschaller@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sqlalchemy = "^2.0.2"
+fastapi = "^0.90.0"
+flet = "^0.4.0"
+requests = "^2.28.2"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+pylint = "^2.16.1"
+pre-commit = "^3.0.4"
+python-dotenv = "^0.21.1"
+sentry-sdk = "^1.15.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+include = '\.pyi?$'
+exclude = '''
+/(
+  \.toml
+  |\.sh
+  |\.ps1
+  |\.git
+  |\.ini
+  |Dockerfile
+  |docker-compose.yml
+)/
+'''
+
+
+[tool.pylint.master]
+ignore = ".git"
+extension-pkg-whitelist = "pydantic"
+
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+min-public-methods = 0
+max-args = 12
+max-attributes = 12
