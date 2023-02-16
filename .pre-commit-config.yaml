@@ -24,7 +24,11 @@ repos:
       - id: black-jupyter
         args: [--config=./pyproject.toml]
 
-  - repo: https://github.com/PyCQA/pylint
-    rev: v2.16.1
+  - repo: local
     hooks:
       - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [ python ]
+        require_serial: true
