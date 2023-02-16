@@ -20,9 +20,9 @@ repos:
     rev: 23.1.0
     hooks:
       - id: black
-        args: [--config ./pyproject.toml]
+        args: [--config=./pyproject.toml]
       - id: black-jupyter
-        args: [--config ./pyproject.toml]
+        args: [--config=./pyproject.toml]
 
   - repo: https://github.com/PyCQA/pylint
     rev: v2.16.1
