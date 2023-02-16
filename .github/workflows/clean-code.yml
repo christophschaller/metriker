@@ -16,5 +16,5 @@ jobs:
           restore-keys: ${{ runner.os }}-pip
       # install black & pylint
       - run: python -m pip install black pylint
-      - run: black . --check
+      - run: black . --check --config ./pyproject.toml
       - run: pylint --recursive=y .
