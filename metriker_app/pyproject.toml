@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["chris <58859629+christophschaller@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{ include = "metriker_app" }]
+packages = [{include = "metriker_app"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -17,7 +17,7 @@ kaleido = "0.2.1"
 
 
 [tool.poetry.group.dev.dependencies]
-database-utils = { path = "../database_utils", develop = true }
+database-utils = {path = "../database_utils", develop = true}
 
 [build-system]
 requires = ["poetry-core"]
