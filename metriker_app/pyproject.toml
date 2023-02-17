@@ -11,8 +11,6 @@ python = "^3.9"
 flet = "^0.4.0"
 requests = "^2.28.2"
 python-dotenv = "^0.21.1"
-sentry-sdk = "^1.18.0"
-cryptography = "^40.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
