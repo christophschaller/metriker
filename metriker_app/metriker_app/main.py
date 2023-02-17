@@ -8,12 +8,13 @@ import requests
 from flet.auth.oauth_provider import OAuthProvider
 from dotenv import load_dotenv
 
-from .app_layout import AppLayout
 from database_utils.user_handler import StravaUserHandler, StravaUser
 from database_utils.activity_handler import StravaActivityHandler
 
+from views import LoginView, ChallengesView, UserView, DataPrivacyView
 
-class FletApp(ft.UserControl):
+
+class Metriker(ft.UserControl):
     """
     This class defines the frame of the webapp and its interfaces.
     """
@@ -21,8 +22,7 @@ class FletApp(ft.UserControl):
     def __init__(
         self,
         page: ft.Page,
-        client_id: str,
-        client_secret: str,
+        auth_provider: OAuthProvider,
         user_handler: StravaUserHandler,
         activity_handler: StravaActivityHandler,
         strava_service_url: str,
@@ -38,177 +38,127 @@ class FletApp(ft.UserControl):
         """
         super().__init__()
         self.page = page
-        self.page.on_route_change = self._route_change
 
-        self.strava_service_url = strava_service_url
+        # general settings
+        self.page.title = "Honigmann"
+        self.page.padding = 0
+        self.page.theme = ft.theme.Theme(font_family="Verdana")
+        self.page.theme.page_transitions.windows = "cupertino"
+        self.page.fonts = {"Pacifico": "/Pacifico-Regular.ttf"}
+        self.page.bgcolor = "#fff5f5f5"
 
-        self.auth_provider = OAuthProvider(
-            client_id=client_id,
-            client_secret=client_secret,
-            authorization_endpoint="https://www.strava.com/oauth/authorize",
-            token_endpoint="https://www.strava.com/oauth/token",
-            redirect_url="http://localhost:8550/api/oauth/redirect",
-            user_endpoint="https://www.strava.com/api/v3/athlete",
-            user_scopes=["read,activity:read_all"],
-            user_id_fn=lambda user: user["id"],
-        )
-
-        # populate login_button
-        self.login_button = ft.FilledButton(
-            text="Login",
-            icon="login",
-            icon_color=ft.colors.WHITE,
-            style=ft.ButtonStyle(bgcolor=ft.colors.ORANGE),
-            on_click=self._login,
-        )
-        # populate logout_button
-        self.logout_button = ft.FilledTonalButton(
-            text="Logout",
-            icon="logout",
-            icon_color=ft.colors.BLACK,
-            style=ft.ButtonStyle(bgcolor=ft.colors.ORANGE),
-            on_click=self._logout,
-        )
-        self.page.on_login = self._on_login
-        self.page.on_logout = self._on_logout
-
-        # because there is no user yet
-        self.user = None
+        # auth provider for strava login
+        self.auth_provider = auth_provider
+        # database wrappers
         self.user_handler = user_handler
         self.activity_handler = activity_handler
 
-        self.back_button = ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.page.go("/"))
-        self.avatar = ft.CircleAvatar(
-            foreground_image_url=None,
-            background_image_url=None,
-            content=ft.Icon(ft.icons.PERSON),
-            color=ft.colors.WHITE,
-            bgcolor=ft.colors.BLUE_GREY,
-        )
-        self.appbar_items = [
-            ft.PopupMenuItem(content=self.logout_button),
-            ft.PopupMenuItem(),
-            ft.PopupMenuItem(text="Data Privacy", on_click=lambda _: self.page.go("/data_privacy")),
-        ]
-        self.avatar_button = ft.PopupMenuButton(content=self.avatar, items=self.appbar_items)
-        self.avatar_button.disabled = True
-        self.appbar = self._build_app_bar()
-        self.page.appbar = self.appbar
-        self.logout_button.visible = False
+        self.page.on_route_change = self.route_change
+        self.page.on_view_pop = self.view_pop
+        self.page.on_login = self.on_login
+        self.page.on_logout = self.on_logout
 
-        self.layout = None
+        # flet user object
+        self.user = None
+        # url of server interfacing with strava api to request activities
+        self.strava_service_url = strava_service_url
 
-        self.page.update()
+        self.challenges_view = ChallengesView(self)
 
-    def _login(self, event):
+    def build(self):
+        return ft.Column()
+
+    def login(self, event):
         self.page.login(self.auth_provider)
 
-    def _on_login(self, event):
+    def on_login(self, event):
         if not event.error:
+            # set user
             self.user = self.page.auth.user
-            existing_user = self.user_handler.get(self.user.user_id)
+            # initialise challenges view
+            self.challenges_view = ChallengesView(self)
+            existing_user = self.user_handler.get(self.user.id)
             if not existing_user:
                 # add new user to db
                 self.user_handler.add(
                     StravaUser(
-                        id=self.user.user_id,
+                        id=self.user.id,
                         name=self.user["firstname"],
                         refresh_token=self.page.auth.token.refresh_token,
                     )
                 )
-                # request ingestion od users activities
-                requests.post(f"{self.strava_service_url}/updateUserActivities?user_id={self.user.user_id}")
+                # request ingestion existing user activities
+                requests.post(f"{self.strava_service_url}/updateUserActivities?user_id={self.user.id}", timeout=60)
             elif existing_user.refresh_token != self.page.auth.token.refresh_token:
-                # update refresh token if it has changed
+                # update refresh token if it changed
                 self.user_handler.update(
                     StravaUser(
-                        id=self.user.user_id,
+                        id=self.user.id,
                         name=self.user["firstname"],
                         refresh_token=self.page.auth.token.refresh_token,
                     )
                 )
-
-            self.avatar.foreground_image_url = self.user.get("profile_medium")
-            initials = f"{self.user['firstname'][0]}{self.user['lastname'][0]}"
-            self.avatar.content = ft.Text(initials)
-            self.avatar.bgcolor = ft.colors.BLUE
-            self.avatar.update()
-            self.login_button.visible = False
-            self.login_button.update()
-            self.logout_button.visible = True
-            self.logout_button.update()
-            self.avatar_button.disabled = False
-            self.avatar_button.update()
             self.page.update()
             self.page.go("/challenges")
         else:
             raise Exception(event.error)
 
-    def _logout(self, e):
+    def logout(self, e):
         self.user = None
+        self.challenges_view = None
         self.page.logout()
 
-    def _on_logout(self, e):
-        self.avatar.content = ft.Icon(ft.icons.PERSON)
-        self.avatar.color = ft.colors.WHITE
-        self.avatar.bgcolor = ft.colors.BLUE_GREY
-        self.avatar.update()
-        self.login_button.visible = True
-        self.login_button.update()
-        self.logout_button.visible = False
-        self.logout_button.update()
-        self.avatar_button.disabled = True
-        self.avatar_button.update()
+    def on_logout(self, e):
         self.page.update()
         self.page.go("/")
 
-    def _build_app_bar(self):
-        return ft.AppBar(
-            leading=self.back_button,
-            leading_width=75,
-            title=ft.Text(f"Honigmann", font_family="sen", size=32, text_align=ft.TextAlign("center")),
-            center_title=True,
-            toolbar_height=75,
-            bgcolor=ft.colors.WHITE,
-            actions=[
-                self.avatar_button,
-                ft.VerticalDivider(color=ft.colors.WHITE),
-                self.login_button,
-                # self.logout_button,
-                ft.VerticalDivider(color=ft.colors.WHITE),
-            ],
-        )
+    def route_change(self, route) -> None:
+        print(route)
+        template_route = ft.TemplateRoute(self.page.route)
 
-    def _route_change(self, route):
-        troute = ft.TemplateRoute(self.page.route)
-        self.back_button.visible = True
-        if troute.match("/"):
+        if template_route.match("/"):
             if self.user:
                 self.page.go("/challenges")
             else:
                 self.page.go("/login")
-        elif troute.match("/user/:id"):
-            if int(troute.id) not in self.user_handler.keys():
+
+        if template_route.match("/login"):
+            if not self.user:
+                self.page.views.clear()
+                self.page.views.append(LoginView(self))
+                self.page.update()
+            else:
+                self.page.go("/")
+
+        if template_route.match("/challenges*"):
+            if template_route.match("/challenges"):
+                self.page.views.clear()
+                self.page.views.append(self.challenges_view)
+                self.page.update()
+                first_challenge = list(self.challenges_view.challenges.values())[0]
+                self.page.go(f"/challenges/{first_challenge.name}")
+            if template_route.match("/challenges/:challenge_name"):
+                challenge_name = template_route.__getattribute__("challenge_name")
+                self.challenges_view.set_active_challenge(challenge_name)
+
+        if template_route.match("/user/:user_id"):
+            user_id = template_route.__getattribute__("user_id")
+            if user_id not in self.user_handler.keys():
                 self.page.go("/")
                 return
-            self.layout.set_user_view(int(troute.id))
-        elif troute.match("/login"):
-            self.back_button.visible = False
-            self.layout.set_login_view()
-        elif troute.match("/challenges"):
-            self.back_button.visible = False
-            self.layout.set_challenges_view()
-        elif troute.match("/data_privacy"):
-            self.layout.set_data_privacy_view()
-        self.page.update()
+            else:
+                self.page.views.append(UserView(self, user_id=user_id))
 
-    def build(self):
-        self.layout = AppLayout(self, self.page, self.user_handler, self.activity_handler)
-        return self.layout
+        if template_route.match("/data_privacy"):
+            self.page.views.append(DataPrivacyView(self))
+
+    def view_pop(self, view):
+        self.page.views.pop()
+        top_view = self.page.views[-1]
+        self.page.go(top_view.route)
 
     def initialize(self):
         self.page.views.clear()
-        self.page.views.append(ft.View("/", [self.appbar, self.layout], padding=ft.padding.all(0), bgcolor="#fff5f5f5"))
         self.page.update()
         self.page.go("/")
 
@@ -219,6 +169,11 @@ if __name__ == "__main__":
 
     STRAVA_CLIENT_ID = os.getenv("METRIKER_STRAVA_CLIENT_ID")
     STRAVA_CLIENT_SECRET = os.getenv("METRIKER_STRAVA_CLIENT_SECRET")
+    STRAVA_AUTH_ENDPOINT = os.getenv("METRIKER_STRAVA_AUTH_ENDPOINT")
+    STRAVA_TOKEN_ENDPOINT = os.getenv("METRIKER_STRAVA_TOKEN_ENDPOINT")
+    STRAVA_REDIRECT_URL = os.getenv("METRIKER_STRAVA_REDIRECT_URL")
+    STRAVA_USER_ENDPOINT = os.getenv("METRIKER_STRAVA_USER_ENDPOINT")
+    STRAVA_USER_SCOPES = os.getenv("METRIKER_STRAVA_USER_SCOPES")
 
     DB_USER = os.getenv("METRIKER_DB_USER")
     DB_PASS = os.getenv("METRIKER_DB_PASS")
@@ -231,6 +186,16 @@ if __name__ == "__main__":
     SECRET_KEY = os.getenv("METRIKER_SECRET_KEY")
 
     def main(page: ft.Page):
+        auth_provider = OAuthProvider(
+            client_id=STRAVA_CLIENT_ID,
+            client_secret=STRAVA_CLIENT_SECRET,
+            authorization_endpoint="https://www.strava.com/oauth/authorize",
+            token_endpoint="https://www.strava.com/oauth/token",
+            redirect_url="http://localhost:8550/api/oauth/redirect",
+            user_endpoint="https://www.strava.com/api/v3/athlete",
+            user_scopes=["read,activity:read_all"],
+            user_id_fn=lambda user: user["id"],
+        )
         user_handler = StravaUserHandler(
             secret_key=SECRET_KEY, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT, database=DB_NAME
         )
@@ -238,23 +203,14 @@ if __name__ == "__main__":
             user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT, database=DB_NAME
         )
 
-        page.title = "Honigmann"
-        page.padding = 0
-        page.theme = ft.theme.Theme(font_family="Verdana")
-        page.theme.page_transitions.windows = "cupertino"
-        page.fonts = {"Pacifico": "/Pacifico-Regular.ttf"}
-        page.bgcolor = "#fff5f5f5"
-        app = FletApp(
+        app = Metriker(
             page=page,
-            client_id=STRAVA_CLIENT_ID,
-            client_secret=STRAVA_CLIENT_SECRET,
+            auth_provider=auth_provider,
             activity_handler=activity_handler,
             user_handler=user_handler,
             strava_service_url=STRAVA_SERVICE_URL,
         )
         page.add(app)
-        page.update()
         app.initialize()
-        page.go("/")
 
     ft.app(target=main, port=8550, view=ft.WEB_BROWSER)
