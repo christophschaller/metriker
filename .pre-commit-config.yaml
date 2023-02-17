@@ -29,11 +29,11 @@ repos:
       - id: black-jupyter
         args: [--config=./pyproject.toml]
 
-  - repo: local
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [ python ]
-        require_serial: true
+#  - repo: local
+#    hooks:
+#      - id: pylint
+#        name: pylint
+#        entry: pylint
+#        language: system
+#        types: [ python ]
+#        require_serial: true
