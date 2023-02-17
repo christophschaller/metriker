@@ -145,7 +145,7 @@ class StravaUserHandler(DatabaseConnector):
         Returns:
             List of strings.
         """
-        return self.session.query(User.id).all()
+        return [obj.id for obj in self.session.query(User.id).all()]
 
     def values(self) -> List[StravaUser]:
         """
@@ -154,4 +154,7 @@ class StravaUserHandler(DatabaseConnector):
         Returns:
             List of StravaUser objects.
         """
-        return self.session.query(User).all()
+        return [
+            StravaUser(id=obj.id, name=obj.name, refresh_token=decrypt(obj.refresh_token, self.secret_key))
+            for obj in self.session.query(User).all()
+        ]
