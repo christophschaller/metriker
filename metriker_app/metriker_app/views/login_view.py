@@ -1,23 +1,10 @@
-"""
-Module holding LoginView.
-"""
 import flet as ft
 
 from .base_view import BaseView
 
 
 class LoginView(BaseView):
-    """
-    LoginView expands the BaseView with Controls to authenticate a user.
-    """
-
     def __init__(self, app, *args, **kwargs):
-        """
-        Args:
-            app: Metriker object
-            *args: list of additional arguments for ft.View
-            **kwargs: dict of additional keyword arguments for ft.View
-        """
         super().__init__(app, *args, **kwargs)
         self.app = app
         self.route = "/login"
@@ -47,12 +34,6 @@ class LoginView(BaseView):
         )
 
     def create_login_button(self) -> ft.Control:
-        """
-        Creates a Button which initiates the login flow.
-
-        Returns:
-            ft.FilledButton
-        """
         return ft.FilledButton(
             text="Login",
             icon="login",
