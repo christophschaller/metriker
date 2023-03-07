@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from database_utils.user_handler import StravaUserHandler, StravaUser
 from database_utils.activity_handler import StravaActivityHandler
 
-from views import LoginView, ChallengesView, UserView, DataPrivacyView
+# from views import LoginView, ChallengesView, UserView, DataPrivacyView
 
 
 class Metriker(ft.UserControl):
