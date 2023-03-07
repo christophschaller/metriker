@@ -20,7 +20,11 @@ class Challenge:
 
 
 CHALLENGES = {
-    "bike": Challenge(name="bike", icon=ft.icons.PEDAL_BIKE, content=ft.Container(content=ft.Text("bike"))),
+    "bike": Challenge(
+        name="bike",
+        icon=ft.icons.PEDAL_BIKE,
+        content=ft.Container(content=ft.Text("run")),
+    ),
     "run": Challenge(name="run", icon=ft.icons.HIKING, content=ft.Container(content=ft.Text("run"))),
 }
 
@@ -128,7 +132,10 @@ class ChallengesView(BaseView):
                 [
                     activity.distance
                     for activity in self.app.activity_handler.get_user_activities(
-                        user.id, sport_type=sport, start_date="2023-01-01 00:00:00", end_date="2023-01-02 00:00:00"
+                        user.id,
+                        sport_type=sport,
+                        start_date="2023-01-01 00:00:00",
+                        end_date="2023-01-02 00:00:00",
                     )
                     # if activity.type == sport
                 ]
@@ -145,7 +152,8 @@ class ChallengesView(BaseView):
                     cells=[
                         ft.DataColumn(ft.Text(i + 1)),
                         ft.DataCell(
-                            ft.Text(elem[0].name), on_tap=lambda e: self.app.page.go(f"/user/{elem[0].id}")
+                            ft.Text(elem[0].name),
+                            on_tap=lambda e: self.app.page.go(f"/user/{elem[0].id}"),
                         ),  # TODO: find better way to link users
                         ft.DataCell(ft.Text(elem[1])),
                     ],
