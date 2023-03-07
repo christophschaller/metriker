@@ -302,7 +302,6 @@ class ChallengesView(BaseView):
                     rows=self.get_table_rows("Ride"),
                 ),
                 ft.Column(
-                    # hier eine challenge
                     controls=[
                         ft.FilledButton(
                             text=f"{user.name}",
@@ -317,7 +316,6 @@ class ChallengesView(BaseView):
                 # self._active_content,
             ]
         )
-        self.controls.extend([self.nav_bar, self._active_content])
 
     def _create_nav_bar(self) -> ft.NavigationBar:
         """Creates and ft.NavigationBar Control containing the available challenges.
