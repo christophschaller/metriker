@@ -64,7 +64,16 @@ class ChallengesView(BaseView):
         self.controls.extend(
             [
                 self.nav_bar,
+                ft.DataTable(
+                    columns=[
+                        ft.DataColumn(ft.Text("Place"), numeric=True),
+                        ft.DataColumn(ft.Text("Name")),
+                        ft.DataColumn(ft.Text("Distance"), numeric=True),
+                    ],
+                    rows=self.get_table_rows("Ride"),
+                ),
                 ft.Column(
+                    # hier eine challenge
                     controls=[
                         ft.FilledButton(
                             text=f"{user.name}",
@@ -76,8 +85,8 @@ class ChallengesView(BaseView):
                     scroll=ft.ScrollMode.AUTO,
                     expand=True,
                 ),
-                self._active_content,
-            ],
+                # self._active_content,
+            ]
         )
 
     def _create_nav_bar(self) -> ft.NavigationBar:
@@ -119,3 +128,35 @@ class ChallengesView(BaseView):
         """
         selected_challenge = list(self.challenges.values())[self.nav_bar.selected_index]
         self.page.go(f"/challenges/{selected_challenge.name}")
+
+    def get_table_rows(self, sport):  # sport="Ride" e.g.
+        user_distance = []
+        for user in self.app.user_handler.values():
+            distance = sum(
+                [
+                    activity.distance
+                    for activity in self.app.activity_handler.get_user_activities(
+                        user.id, sport_type=sport, start_date="2023-01-01 00:00:00", end_date="2023-01-02 00:00:00"
+                    )
+                    # if activity.type == sport
+                ]
+            )
+            print(distance)
+            user_distance.append((user, distance))
+
+        sorted_user_distance = sorted(user_distance, key=lambda x: x[1], reverse=True)
+
+        rows = []
+        for i, elem in enumerate(sorted_user_distance):
+            rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataColumn(ft.Text(i + 1)),
+                        ft.DataCell(
+                            ft.Text(elem[0].name), on_tap=lambda e: self.app.page.go(f"/user/{elem[0].id}")
+                        ),  # TODO: find better way to link users
+                        ft.DataCell(ft.Text(elem[1])),
+                    ],
+                ),
+            )
+        return rows

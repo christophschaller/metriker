@@ -6,7 +6,7 @@ StravaActivityHandler wraps basic data interactions regarding activities.
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Dict
+from typing import Dict, List
 
 from database_utils import DatabaseConnector
 from database_utils.schema import Activity
@@ -162,6 +162,41 @@ class StravaActivityHandler(DatabaseConnector):
         activity = self.session.query(Activity).filter(Activity.id == activity_id).first()
         self.session.delete(activity)
         self.session.commit()
+
+    def get_user_activities(
+        self, user_id: str, sport_type: str = None, start_date: datetime = None, end_date: datetime = None
+    ) -> List[StravaActivity]:
+        """
+        TODO: Docstring
+        """
+        query = self.session.query(Activity).filter(Activity.user_id == user_id)  # .all()
+
+        if sport_type is not None:
+            query = query.filter(Activity.type == sport_type)
+        if start_date is not None:
+            query = query.filter(Activity.start_date >= start_date)
+        if end_date is not None:
+            query = query.filter(Activity.start_date <= end_date)
+
+        activities = query.all()
+
+        logger.info("got %s activities for user %s", len(activities), user_id)
+        print("got %s activities for user %s", len(activities), user_id)
+
+        return [
+            StravaActivity(
+                id=activity.id,
+                user_id=activity.user_id,
+                name=activity.name,
+                distance=activity.distance,
+                moving_time=activity.moving_time,
+                elapsed_time=activity.elapsed_time,
+                total_elevation_gain=activity.total_elevation_gain,
+                sport_type=activity.sport_type,
+                start_date=activity.start_date,
+            )
+            for activity in activities
+        ]
 
     def delete_user_activities(self, user_id: str) -> None:
         """Delete all existing StravaActivity for a given user_id from data.
