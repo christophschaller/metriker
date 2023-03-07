@@ -164,10 +164,23 @@ class StravaActivityHandler(DatabaseConnector):
         self.session.commit()
 
     def get_user_activities(
-        self, user_id: str, sport_type: str = None, start_date: datetime = None, end_date: datetime = None
+        self,
+        user_id: str,
+        sport_type: str = None,
+        start_date: datetime = None,
+        end_date: datetime = None,
     ) -> List[StravaActivity]:
         """
-        TODO: Docstring
+         Return activity information for a userid
+
+        Args:
+            user_id: id of the user
+            sport_type: sport type for e.g."Ride" (optional input, otherwise all sport types)
+            start_date: start activity date for query (optional input, otherwise no starting date)
+            end_date: end activity date for query (optional input, otherwise no ending date)
+
+        Returns:
+            StravaActivities which matches the specified input
         """
         query = self.session.query(Activity).filter(Activity.user_id == user_id)  # .all()
 
