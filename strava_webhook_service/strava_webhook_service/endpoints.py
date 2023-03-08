@@ -1,5 +1,5 @@
 """
-Main Api of the strava_webhook_service for metriker.
+Endpoints of the strava_webhook_service for metriker.
 """
 
 from fastapi import APIRouter
