@@ -2,6 +2,7 @@
 Config for the webhook service.
 The config is read from env vars, .env files and default values in this order.
 """
+# pylint:disable=duplicate-code
 from pydantic import AnyUrl, BaseSettings
 
 
@@ -27,3 +28,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# pylint:enable=duplicate-code
