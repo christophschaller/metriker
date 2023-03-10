@@ -57,3 +57,6 @@ max-line-length = 120
 min-public-methods = 0
 max-args = 12
 max-attributes = 12
+
+[tool.pylint.TYPECHECK]
+generated-members = "template_route.challenge_name,template_route.user_id"
