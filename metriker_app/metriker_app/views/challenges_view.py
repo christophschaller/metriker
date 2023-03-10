@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import flet as ft
 
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import pandas as pd
 import plotly.express as px
 from flet.plotly_chart import PlotlyChart
@@ -43,23 +44,26 @@ class ChallengeContent(ft.Column):
         self.end_date = end_date
 
         self.controls = [
-            ft.Container(self.create_chart()),
-            ft.Container(self.create_table()),
+            ft.Container(self.create_chart("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
+            ft.Container(self.create_table("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
         ]
 
-    def get_table_rows(self):  # sport="Ride" e.g.
+    def get_table_rows(self, start_date, end_date):
         user_distance = []
         for user in self.app.user_handler.values():
-            distance = sum(
-                [
-                    activity.distance
-                    for activity in self.app.activity_handler.get_user_activities(
-                        user.id,
-                        sport_type=self.sport_type,
-                        start_date="2023-01-01 00:02:00",
-                        end_date="2023-01-02 00:001:00",
-                    )
-                ]
+            distance = (
+                sum(
+                    [
+                        activity.distance
+                        for activity in self.app.activity_handler.get_user_activities(
+                            user.id,
+                            sport_type=self.sport_type,
+                            start_date=start_date,
+                            end_date=end_date,
+                        )
+                    ]
+                )
+                / 1000
             )
             user_distance.append((user, distance))
 
@@ -79,7 +83,7 @@ class ChallengeContent(ft.Column):
                                 on_click=lambda e: self.app.page.go(f"/user/{e.control.data}"),
                             )
                             # on_tap=lambda e: self.app.page.go(f"/user/{elem[0].id}"),
-                        ),  # TODO: find better way to link users
+                        ),
                         ft.DataCell(ft.Text(elem[1])),
                     ],
                 ),
@@ -101,44 +105,55 @@ class ChallengeContent(ft.Column):
                 new_start_date = datetime(2023, month, 1, 0, 0, 0)
                 new_end_date = datetime(2023, month + 1, 1, 0, 0, 0) - timedelta(seconds=1)
 
-                month_distance = sum(
-                    [
-                        activity.distance
-                        for activity in self.app.activity_handler.get_user_activities(
-                            user.id,
-                            sport_type=self.sport_type,
-                            start_date=new_start_date,
-                            end_date=new_end_date,
-                        )
-                    ]
+                month_distance = (
+                    sum(
+                        [
+                            activity.distance
+                            for activity in self.app.activity_handler.get_user_activities(
+                                user.id,
+                                sport_type=self.sport_type,
+                                start_date=new_start_date,
+                                end_date=new_end_date,
+                            )
+                        ]
+                    )
+                    / 1000
                 )
-                # month_distance = (month,month_distance)
                 user_activities.append(month_distance)
             all_activities.append(user_activities)
-            # print("###### user_activities = "+str(user_activities))
 
-        # month_columns = []
-        # usernames_index = []
-        df = pd.DataFrame(all_activities)  # ,columns=month_columns, index=usernames_index)
-        # print(df)
+        month_columns = []
+        for i in range(0, end_date.month - start_date.month + 1):
+            next_month = start_date + relativedelta(months=i)
+            next_month_name = next_month.strftime("%B")
+            month_columns.append(next_month_name)
 
-        # sport_graph = PlotlyChart(px.line(df#.transpose()
-        #                                  ))#,template="simple_white", line_shape="spline",labels={'value':'Kilometer', 'index':'Monate'}))#, expand=True)
-        return df  # sport_graph
+        usernames_index = [user.name for user in self.app.user_handler.values()]
+        print(month_columns)
+        df = pd.DataFrame(all_activities, columns=month_columns, index=usernames_index)
+        print(df)
 
-    def create_chart(self):
+        return df
+
+    def create_chart(self, start_date, end_date):
         return PlotlyChart(
-            px.line(self.get_sport_plot("2023-01-01 00:00:05", "2023-03-03 00:00:05").transpose())
-        )  # ,template="simple_white", line_shape="spline",labels={'value':'Kilometer', 'index':'Monate'}))#, expand=True)# self._active_content
+            px.line(
+                self.get_sport_plot(start_date, end_date).transpose(),
+                template="simple_white",
+                line_shape="spline",
+                labels={"value": "Kilometer", "index": "Monate"},
+            )
+        )
+        # , expand=True)# self._active_content
 
-    def create_table(self):
+    def create_table(self, start_date, end_date):
         return ft.DataTable(
             columns=[
                 ft.DataColumn(ft.Text("Place"), numeric=True),
                 ft.DataColumn(ft.Text("Name")),
                 ft.DataColumn(ft.Text("Distance"), numeric=True),
             ],
-            rows=self.get_table_rows(),
+            rows=self.get_table_rows(start_date, end_date),
         )
 
 
@@ -164,7 +179,7 @@ class ChallengesView(BaseView):
             "bike": Challenge(
                 name="bike",
                 icon=ft.icons.PEDAL_BIKE,
-                content=ChallengeContent(self.app, "bike", "2023-01-01 00:00:01", "2023-03-03 00:00:05"),
+                content=ChallengeContent(self.app, "Ride", "2023-01-01 00:00:01", "2023-03-03 00:00:05"),
             ),
             "run": Challenge(
                 name="run",
