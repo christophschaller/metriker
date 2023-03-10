@@ -186,7 +186,7 @@ class ChallengesView(BaseView):
             "run": Challenge(
                 name="run",
                 icon=ft.icons.HIKING,
-                content=ChallengeContent(self.app, "run", "2023-01-01 00:00:01", "2023-03-03 00:00:05"),
+                content=ChallengeContent(self.app, "Run", "2023-01-01 00:00:01", "2023-03-03 00:00:05"),
             ),
         }
         self.nav_bar = self._create_nav_bar()
