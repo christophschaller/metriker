@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from database_utils.user_handler import StravaUserHandler, StravaUser
 from database_utils.activity_handler import StravaActivityHandler
 
-from views import LoginView, ChallengesView, UserView, DataPrivacyView
+from .views import LoginView, ChallengesView, UserView, DataPrivacyView
 
 
 class Metriker(ft.UserControl):
@@ -30,8 +30,6 @@ class Metriker(ft.UserControl):
         """
         Args:
             page: ft.Page
-            client_id: strava client id for auth with strava
-            client_secret: strava client secret for auth with strava
             user_handler: wrapper for user storage
             activity_handler: wrapper for activity storage
             strava_service_url: url to background service interfacing with the strava api
@@ -42,7 +40,7 @@ class Metriker(ft.UserControl):
         # general settings
         self.page.title = "Honigmann"
         self.page.padding = 0
-        self.page.theme = ft.theme.Theme(font_family="Verdana")
+        self.page.theme = ft.Theme(font_family="Verdana")
         self.page.theme.page_transitions.windows = "cupertino"
         self.page.fonts = {"Pacifico": "/Pacifico-Regular.ttf"}
         self.page.bgcolor = "#fff5f5f5"
@@ -68,10 +66,28 @@ class Metriker(ft.UserControl):
     def build(self):
         return ft.Column()
 
-    def login(self, event):
+    def login(self, _) -> None:
+        """
+        Initiate Login.
+
+        Args:
+            _: unused event from caller
+
+        Returns:
+            None
+        """
         self.page.login(self.auth_provider)
 
-    def on_login(self, event):
+    def on_login(self, event) -> None:
+        """
+        Flow triggered on successful login.
+
+        Args:
+            event: login event from caller
+
+        Returns:
+            None
+        """
         if not event.error:
             # set user
             self.user = self.page.auth.user
@@ -103,25 +119,53 @@ class Metriker(ft.UserControl):
         else:
             raise Exception(event.error)
 
-    def logout(self, e):
+    def logout(self, _) -> None:
+        """
+        Initiate Logout.
+
+        Args:
+            _: unused event from caller
+
+        Returns:
+            None
+        """
         self.user = None
         self.challenges_view = None
         self.page.logout()
 
-    def on_logout(self, e):
+    def on_logout(self, _):
+        """
+        Flow triggered on logout.
+
+        Args:
+            _: unused logout event from caller
+
+        Returns:
+
+        """
         self.page.update()
         self.page.go("/")
 
-    def route_change(self, route) -> None:
-        print(route)
+    def route_change(self, _) -> None:
+        """
+        Handle route changes by setting appropriate views and content.
+
+        Args:
+            _: unused route provided by on_route_change
+
+        Returns:
+            None
+        """
         template_route = ft.TemplateRoute(self.page.route)
 
+        # redirect from / depending on login status
         if template_route.match("/"):
             if self.user:
                 self.page.go("/challenges")
             else:
                 self.page.go("/login")
 
+        # make sure login is only visible for logged out users
         if template_route.match("/login"):
             if not self.user:
                 self.page.views.clear()
@@ -130,34 +174,56 @@ class Metriker(ft.UserControl):
             else:
                 self.page.go("/")
 
+        # handle challenges views
         if template_route.match("/challenges*"):
+            # redirect to first challenge
             if template_route.match("/challenges"):
                 self.page.views.clear()
                 self.page.views.append(self.challenges_view)
                 self.page.update()
                 first_challenge = list(self.challenges_view.challenges.values())[0]
                 self.page.go(f"/challenges/{first_challenge.name}")
+            # set internal content of the challenges view to match the selected challenge
             if template_route.match("/challenges/:challenge_name"):
-                challenge_name = template_route.__getattribute__("challenge_name")
+                # attributes are assigned dynamically
+                challenge_name = template_route.challenge_name
                 self.challenges_view.set_active_challenge(challenge_name)
 
+        # handle user views
         if template_route.match("/user/:user_id"):
-            user_id = template_route.__getattribute__("user_id")
+            # attributes are assigned dynamically
+            user_id = template_route.user_id
             if user_id not in self.user_handler.keys():
                 self.page.go("/")
                 return
-            else:
-                self.page.views.append(UserView(self, user_id=user_id))
+            self.page.views.append(UserView(self, user_id=user_id))
 
+        # handle data privacy view
         if template_route.match("/data_privacy"):
             self.page.views.append(DataPrivacyView(self))
 
-    def view_pop(self, view):
+    def view_pop(self, _) -> None:
+        """
+        Flow triggered on view pop.
+
+        Args:
+            _: unused view provided by on_view_pop
+
+        Returns:
+            None
+        """
         self.page.views.pop()
         top_view = self.page.views[-1]
         self.page.go(top_view.route)
 
-    def initialize(self):
+    def initialize(self) -> None:
+        """
+        Initialize the Metriker App.
+        This should run after adding a page object to a Metriker object.
+
+        Returns:
+            None
+        """
         self.page.views.clear()
         self.page.update()
         self.page.go("/")
@@ -185,15 +251,25 @@ if __name__ == "__main__":
 
     SECRET_KEY = os.getenv("METRIKER_SECRET_KEY")
 
-    def main(page: ft.Page):
+    def main(page: ft.Page) -> None:
+        """
+        Initialize all Components of the Metriker App.
+        This function is meant to be called directly by flet.
+
+        Args:
+            page: page to display Metriker App to.
+
+        Returns:
+            None
+        """
         auth_provider = OAuthProvider(
             client_id=STRAVA_CLIENT_ID,
             client_secret=STRAVA_CLIENT_SECRET,
-            authorization_endpoint="https://www.strava.com/oauth/authorize",
-            token_endpoint="https://www.strava.com/oauth/token",
-            redirect_url="http://localhost:8550/api/oauth/redirect",
-            user_endpoint="https://www.strava.com/api/v3/athlete",
-            user_scopes=["read,activity:read_all"],
+            authorization_endpoint=STRAVA_AUTH_ENDPOINT,
+            token_endpoint=STRAVA_TOKEN_ENDPOINT,
+            redirect_url=STRAVA_REDIRECT_URL,
+            user_endpoint=STRAVA_USER_ENDPOINT,
+            user_scopes=STRAVA_USER_SCOPES,
             user_id_fn=lambda user: user["id"],
         )
         user_handler = StravaUserHandler(
