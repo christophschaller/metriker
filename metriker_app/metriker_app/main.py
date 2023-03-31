@@ -1,17 +1,24 @@
 """
 Main module and entrypoint of the metriker flet app.
 """
-import os
+import logging.config
 
+import sentry_sdk
 import flet as ft
 import requests
 from flet.auth.oauth_provider import OAuthProvider
-from dotenv import load_dotenv
 
 from database_utils.user_handler import StravaUserHandler, StravaUser
 from database_utils.activity_handler import StravaActivityHandler
 
+from .config import settings
 from .views import LoginView, ChallengesView, UserView, DataPrivacyView
+
+# setup logging
+logging.config.fileConfig(settings.LOGGING_CONFIG_PATH, disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
+# setup logging to sentry
+sentry_sdk.init(dsn=settings.SENTRY_DSN)
 
 
 class Metriker(ft.UserControl):
@@ -117,7 +124,7 @@ class Metriker(ft.UserControl):
             self.page.update()
             self.page.go("/challenges")
         else:
-            raise Exception(event.error)
+            logger.error(event.error)
 
     def logout(self, _) -> None:
         """
@@ -230,26 +237,6 @@ class Metriker(ft.UserControl):
 
 
 if __name__ == "__main__":
-    load_dotenv("../../dev.env")
-    SENTRY_DSN = os.getenv("METRIKER_SENTRY_DSN")
-
-    STRAVA_CLIENT_ID = os.getenv("METRIKER_STRAVA_CLIENT_ID")
-    STRAVA_CLIENT_SECRET = os.getenv("METRIKER_STRAVA_CLIENT_SECRET")
-    STRAVA_AUTH_ENDPOINT = os.getenv("METRIKER_STRAVA_AUTH_ENDPOINT")
-    STRAVA_TOKEN_ENDPOINT = os.getenv("METRIKER_STRAVA_TOKEN_ENDPOINT")
-    STRAVA_REDIRECT_URL = os.getenv("METRIKER_STRAVA_REDIRECT_URL")
-    STRAVA_USER_ENDPOINT = os.getenv("METRIKER_STRAVA_USER_ENDPOINT")
-    STRAVA_USER_SCOPES = os.getenv("METRIKER_STRAVA_USER_SCOPES")
-
-    DB_USER = os.getenv("METRIKER_DB_USER")
-    DB_PASS = os.getenv("METRIKER_DB_PASS")
-    DB_HOST = os.getenv("METRIKER_DB_HOST")
-    DB_PORT = os.getenv("METRIKER_DB_PORT")
-    DB_NAME = os.getenv("METRIKER_DB_NAME")
-
-    STRAVA_SERVICE_URL = os.getenv("METRIKER_STRAVA_SERVICE_URL")
-
-    SECRET_KEY = os.getenv("METRIKER_SECRET_KEY")
 
     def main(page: ft.Page) -> None:
         """
@@ -263,20 +250,29 @@ if __name__ == "__main__":
             None
         """
         auth_provider = OAuthProvider(
-            client_id=STRAVA_CLIENT_ID,
-            client_secret=STRAVA_CLIENT_SECRET,
-            authorization_endpoint=STRAVA_AUTH_ENDPOINT,
-            token_endpoint=STRAVA_TOKEN_ENDPOINT,
-            redirect_url=STRAVA_REDIRECT_URL,
-            user_endpoint=STRAVA_USER_ENDPOINT,
-            user_scopes=STRAVA_USER_SCOPES,
+            client_id=settings.STRAVA_CLIENT_ID,
+            client_secret=settings.STRAVA_CLIENT_SECRET,
+            authorization_endpoint=settings.STRAVA_AUTH_ENDPOINT,
+            token_endpoint=settings.STRAVA_TOKEN_ENDPOINT,
+            redirect_url=settings.STRAVA_REDIRECT_URL,
+            user_endpoint=settings.STRAVA_USER_ENDPOINT,
+            user_scopes=settings.STRAVA_USER_SCOPES,
             user_id_fn=lambda user: user["id"],
         )
         user_handler = StravaUserHandler(
-            secret_key=SECRET_KEY, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT, database=DB_NAME
+            secret_key=settings.SECRET_KEY,
+            user=settings.DB_USER,
+            password=settings.DB_PASS,
+            host=settings.DB_HOST,
+            port=settings.DB_PORT,
+            database=settings.DB_NAME,
         )
         activity_handler = StravaActivityHandler(
-            user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT, database=DB_NAME
+            user=settings.DB_USER,
+            password=settings.DB_PASS,
+            host=settings.DB_HOST,
+            port=settings.DB_PORT,
+            database=settings.DB_NAME,
         )
 
         app = Metriker(
@@ -284,7 +280,7 @@ if __name__ == "__main__":
             auth_provider=auth_provider,
             activity_handler=activity_handler,
             user_handler=user_handler,
-            strava_service_url=STRAVA_SERVICE_URL,
+            strava_service_url=settings.STRAVA_SERVICE_URL,
         )
         page.add(app)
         app.initialize()
