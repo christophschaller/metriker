@@ -111,7 +111,10 @@ class Metriker(ft.UserControl):
                     )
                 )
                 # request ingestion existing user activities
-                requests.post(f"{self.strava_service_url}/updateUserActivities?user_id={self.user.id}", timeout=60)
+                requests.post(
+                    f"{self.strava_service_url}/updateUserActivities?user_id={self.user.id}",
+                    timeout=settings.STRAVA_SERVICE_TIMEOUT,
+                )
             elif existing_user.refresh_token != self.page.auth.token.refresh_token:
                 # update refresh token if it changed
                 self.user_handler.update(
@@ -249,14 +252,17 @@ if __name__ == "__main__":
         Returns:
             None
         """
+        print("STRAVA_USER_SCOPES", settings.STRAVA_USER_SCOPES)
         auth_provider = OAuthProvider(
             client_id=settings.STRAVA_CLIENT_ID,
-            client_secret=settings.STRAVA_CLIENT_SECRET,
+            client_secret=settings.STRAVA_CLIENT_SECRET.get_secret_value(),
             authorization_endpoint=settings.STRAVA_AUTH_ENDPOINT,
             token_endpoint=settings.STRAVA_TOKEN_ENDPOINT,
             redirect_url=settings.STRAVA_REDIRECT_URL,
             user_endpoint=settings.STRAVA_USER_ENDPOINT,
-            user_scopes=settings.STRAVA_USER_SCOPES,
+            # flet auth sends as iterable
+            # strava endpoints wants a formatted string
+            user_scopes=[settings.STRAVA_USER_SCOPES],
             user_id_fn=lambda user: user["id"],
         )
         # pylint:disable=duplicate-code
