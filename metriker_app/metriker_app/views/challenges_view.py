@@ -42,7 +42,6 @@ class ChallengesView(BaseView):
         self.app = app
         self.route = "/challenges"
 
-        # TODO: find proper place for challenge configuration
         self.challenges = CHALLENGES
         self.nav_bar = self._create_nav_bar()
         self._active_content = ft.Container()
