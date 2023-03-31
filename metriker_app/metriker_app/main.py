@@ -124,8 +124,7 @@ class Metriker(ft.UserControl):
             self.page.update()
             self.page.go("/challenges")
         else:
-            # raise Exception(event.error)
-            log
+            logger.error(event.error)
 
     def logout(self, _) -> None:
         """
