@@ -10,7 +10,9 @@ from database_utils.user_handler import StravaUserHandler
 from .strava_handler import StravaHandler
 from .config import settings
 
+
 # initiate database wrappers
+# pylint:disable=duplicate-code
 user_handler = StravaUserHandler(
     secret_key=settings.SECRET_KEY.get_secret_value(),
     user=settings.DB_USER,
@@ -26,6 +28,7 @@ activity_handler = StravaActivityHandler(
     port=settings.DB_PORT,
     database=settings.DB_NAME,
 )
+# pylint:enable=duplicate-code
 
 # initiate strava api wrapper
 strava_handler = StravaHandler(

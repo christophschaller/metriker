@@ -259,21 +259,23 @@ if __name__ == "__main__":
             user_scopes=settings.STRAVA_USER_SCOPES,
             user_id_fn=lambda user: user["id"],
         )
+        # pylint:disable=duplicate-code
         user_handler = StravaUserHandler(
-            secret_key=settings.SECRET_KEY,
+            secret_key=settings.SECRET_KEY.get_secret_value(),
             user=settings.DB_USER,
-            password=settings.DB_PASS,
+            password=settings.DB_PASS.get_secret_value(),
             host=settings.DB_HOST,
             port=settings.DB_PORT,
             database=settings.DB_NAME,
         )
         activity_handler = StravaActivityHandler(
             user=settings.DB_USER,
-            password=settings.DB_PASS,
+            password=settings.DB_PASS.get_secret_value(),
             host=settings.DB_HOST,
             port=settings.DB_PORT,
             database=settings.DB_NAME,
         )
+        # pylint:enable=duplicate-code
 
         app = Metriker(
             page=page,
