@@ -1,5 +1,6 @@
 """
-Main Api of the strava_ingestion_service for metriker.
+Main Api of the strava_webhook_service for metriker.
+This service will wait for calls from strava telling to update our data or request new activities.
 """
 # pylint:disable=duplicate-code
 import logging.config
@@ -23,7 +24,6 @@ app_config = {}
 if settings.ENVIRONMENT not in SHOW_DOCS_ENVIRONMENT:
     app_config["openapi_url"] = None
 
-# create app
 app = FastAPI(**app_config)
 app.include_router(endpoints.router)
 
