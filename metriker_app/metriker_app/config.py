@@ -1,9 +1,9 @@
 """
-Config for the ingestion service.
+Config for the flet webapp.
 The config is read from env vars, .env files and default values in this order.
 """
 # pylint:disable=duplicate-code
-from pydantic import AnyUrl, BaseSettings, SecretStr
+from pydantic import AnyUrl, SecretStr, BaseSettings
 
 
 class Settings(BaseSettings):
@@ -19,14 +19,23 @@ class Settings(BaseSettings):
         env_file = "./dev.env"
         env_file_encoding = "utf-8"
         env_prefix = "METRIKER_"
-        secrets_dir = "/var/run"
 
     ENVIRONMENT: str
     LOGGING_CONFIG_PATH: str = "./logging.ini"
     SENTRY_DSN: AnyUrl = None
 
+    APP_PORT: int
+
+    STRAVA_SERVICE_URL: AnyUrl
+    STRAVA_SERVICE_TIMEOUT: int = 60
+
     STRAVA_CLIENT_ID: str
     STRAVA_CLIENT_SECRET: SecretStr
+    STRAVA_AUTH_ENDPOINT: AnyUrl
+    STRAVA_TOKEN_ENDPOINT: AnyUrl
+    STRAVA_REDIRECT_URL: AnyUrl
+    STRAVA_USER_ENDPOINT: AnyUrl
+    STRAVA_USER_SCOPES: str
 
     DB_USER: str
     DB_PASS: SecretStr
