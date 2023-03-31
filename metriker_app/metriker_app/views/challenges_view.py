@@ -257,6 +257,7 @@ class ChallengesView(BaseView):
             **kwargs: dict of additional keyword arguments for ft.View
         """
         super().__init__(app, *args, **kwargs)
+        self.scroll = ft.ScrollMode.AUTO
         self.app = app
         self.route = "/challenges"
 
