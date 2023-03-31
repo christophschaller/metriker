@@ -27,21 +27,21 @@ class Settings(BaseSettings):
     STRAVA_SERVICE_URL: AnyUrl
     STRAVA_SERVICE_TIMEOUT: int = 60
 
-    STRAVA_CLIENT_ID = str
-    STRAVA_CLIENT_SECRET = SecretStr
-    STRAVA_AUTH_ENDPOINT = AnyUrl
-    STRAVA_TOKEN_ENDPOINT = AnyUrl
-    STRAVA_REDIRECT_URL = AnyUrl
-    STRAVA_USER_ENDPOINT = AnyUrl
-    STRAVA_USER_SCOPES = str
+    STRAVA_CLIENT_ID: str
+    STRAVA_CLIENT_SECRET: SecretStr
+    STRAVA_AUTH_ENDPOINT: AnyUrl
+    STRAVA_TOKEN_ENDPOINT: AnyUrl
+    STRAVA_REDIRECT_URL: AnyUrl
+    STRAVA_USER_ENDPOINT: AnyUrl
+    STRAVA_USER_SCOPES: str
 
-    DB_USER = str
-    DB_PASS = SecretStr
-    DB_HOST = AnyUrl
-    DB_PORT = int
-    DB_NAME = str
+    DB_USER: str
+    DB_PASS: SecretStr
+    DB_HOST: str
+    DB_PORT: str
+    DB_NAME: str
 
-    SECRET_KEY = SecretStr
+    SECRET_KEY: SecretStr
 
 
 settings = Settings()
