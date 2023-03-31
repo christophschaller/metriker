@@ -16,13 +16,13 @@ class Settings(BaseSettings):
         Config Class defines how settings are loaded from .env files and which prefixes define them.
         """
 
-        env_file = "../../dev.env"
+        env_file = "./dev.env"
         env_file_encoding = "utf-8"
         env_prefix = "METRIKER_"
         secrets_dir = "/var/run"
 
     ENVIRONMENT: str
-    LOGGING_CONFIG_PATH: str = "../../logging.ini"
+    LOGGING_CONFIG_PATH: str = "./logging.ini"
     SENTRY_DSN: AnyUrl = None
 
     STRAVA_CLIENT_ID: str
