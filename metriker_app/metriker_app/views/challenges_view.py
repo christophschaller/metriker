@@ -276,7 +276,6 @@ class ChallengesView(BaseView):
         }
         self.nav_bar = self._create_nav_bar()
         self._active_content = ft.Container()
-        self.padding = ft.padding.all(100)
 
         # add controls to frame
         self.extend_controls()
