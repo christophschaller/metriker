@@ -1,6 +1,4 @@
-"""
-Main module of the metriker flet app.
-"""
+"""Main module of the metriker flet app."""
 import logging.config
 
 import sentry_sdk
@@ -22,9 +20,7 @@ sentry_sdk.init(dsn=settings.SENTRY_DSN)
 
 
 class Metriker(ft.UserControl):
-    """
-    This class defines the frame of the webapp and its interfaces.
-    """
+    """This class defines the frame of the webapp and its interfaces."""
 
     def __init__(
         self,
@@ -34,12 +30,14 @@ class Metriker(ft.UserControl):
         activity_handler: StravaActivityHandler,
         strava_service_url: str,
     ):
-        """
+        """Init of Metriker.
+
         Args:
             page: ft.Page
+            auth_provider: flet OAuthProvider to manage auth flow
             user_handler: wrapper for user storage
             activity_handler: wrapper for activity storage
-            strava_service_url: url to background service interfacing with the strava api
+            strava_service_url: url to background service interfacing with the strava api.
         """
         super().__init__()
         self.page = page
@@ -70,12 +68,19 @@ class Metriker(ft.UserControl):
 
         self.challenges_view = ChallengesView(self)
 
-    def build(self):
+    def build(self) -> ft.Column:
+        """Method required to create initial site.
+
+        This adds an empty column to the site.
+        All it does it fulfilling the requirement of overriding ft.UserControl.build
+
+        Returns:
+            None
+        """
         return ft.Column()
 
-    def login(self, _) -> None:
-        """
-        Initiate Login.
+    def login(self, _: ft.ControlEvent) -> None:
+        """Initiate Login.
 
         Args:
             _: unused event from caller
@@ -85,9 +90,8 @@ class Metriker(ft.UserControl):
         """
         self.page.login(self.auth_provider)
 
-    def on_login(self, event) -> None:
-        """
-        Flow triggered on successful login.
+    def on_login(self, event: ft.LoginEvent) -> None:
+        """Flow triggered on successful login.
 
         Args:
             event: login event from caller
@@ -129,9 +133,8 @@ class Metriker(ft.UserControl):
         else:
             logger.error(event.error)
 
-    def logout(self, _) -> None:
-        """
-        Initiate Logout.
+    def logout(self, _: ft.ControlEvent) -> None:
+        """Initiate Logout.
 
         Args:
             _: unused event from caller
@@ -143,22 +146,20 @@ class Metriker(ft.UserControl):
         self.challenges_view = None
         self.page.logout()
 
-    def on_logout(self, _):
-        """
-        Flow triggered on logout.
+    def on_logout(self, _: ft.LoginEvent) -> None:
+        """Flow triggered on logout.
 
         Args:
             _: unused logout event from caller
 
         Returns:
-
+            None
         """
         self.page.update()
         self.page.go("/")
 
-    def route_change(self, _) -> None:
-        """
-        Handle route changes by setting appropriate views and content.
+    def route_change(self, _: ft.RouteChangeEvent) -> None:  # noqa: C901 - Ignore: `route_change` is too complex
+        """Handle route changes by setting appropriate views and content.
 
         Args:
             _: unused route provided by on_route_change
@@ -212,9 +213,8 @@ class Metriker(ft.UserControl):
         if template_route.match("/data_privacy"):
             self.page.views.append(DataPrivacyView(self))
 
-    def view_pop(self, _) -> None:
-        """
-        Flow triggered on view pop.
+    def view_pop(self, _: ft.ViewPopEvent) -> None:
+        """Flow triggered on view pop.
 
         Args:
             _: unused view provided by on_view_pop
@@ -227,8 +227,8 @@ class Metriker(ft.UserControl):
         self.page.go(top_view.route)
 
     def initialize(self) -> None:
-        """
-        Initialize the Metriker App.
+        """Initialize the Metriker App.
+
         This should run after adding a page object to a Metriker object.
 
         Returns:

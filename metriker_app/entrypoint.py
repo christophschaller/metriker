@@ -1,6 +1,4 @@
-"""
-Entrypoint of the metriker flet app.
-"""
+"""Entrypoint of the metriker flet app."""
 import flet as ft
 
 from metriker_app.main import main

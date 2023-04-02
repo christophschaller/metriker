@@ -1,6 +1,4 @@
-"""
-Entrypoint of the metriker flet app.
-"""
+"""Entrypoint of the metriker flet app."""
 import logging.config
 
 import sentry_sdk
@@ -21,8 +19,8 @@ sentry_sdk.init(dsn=settings.SENTRY_DSN)
 
 
 def main(page: ft.Page) -> None:
-    """
-    Initialize all Components of the Metriker App.
+    """Initialize all Components of the Metriker App.
+
     This function is meant to be called directly by flet.
 
     Args:

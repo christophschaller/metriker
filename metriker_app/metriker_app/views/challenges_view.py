@@ -1,6 +1,6 @@
-"""
-Module holding ChallengesView.
-"""
+"""Module holding ChallengesView."""
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 import flet as ft
@@ -10,9 +10,7 @@ from .base_view import BaseView
 
 @dataclass
 class Challenge:
-    """
-    Temporary Dataclass to define a challenge.
-    """
+    """Temporary Dataclass to define a challenge."""
 
     name: str
     icon: str
@@ -26,17 +24,18 @@ CHALLENGES = {
 
 
 class ChallengesView(BaseView):
-    """
-    ChallengesView expands the BaseView with a NavBar on the bottom of the page.
+    """ChallengesView expands the BaseView with a NavBar on the bottom of the page.
+
     The content of every challenge is displayed in the center and can be changed with the NavBAr.
     """
 
-    def __init__(self, app, *args, **kwargs):
-        """
+    def __init__(self, app: Metriker, *args, **kwargs) -> None:
+        """Init of ChallengesView.
+
         Args:
             app: Metriker object
             *args: list of additional arguments for ft.View
-            **kwargs: dict of additional keyword arguments for ft.View
+            **kwargs: dict of additional keyword arguments for ft.View.
         """
         super().__init__(app, *args, **kwargs)
         self.app = app
@@ -50,6 +49,14 @@ class ChallengesView(BaseView):
         self.extend_controls()
 
     def extend_controls(self) -> None:
+        """Extends the contents of the page.
+
+        Adds buttons leading to each user to the content section and a NavBar to the bottom of the page.
+        Overrides the extend_controls method of BaseView.
+
+        Returns:
+            None
+        """
         self.controls.extend(
             [
                 self.nav_bar,
@@ -70,8 +77,7 @@ class ChallengesView(BaseView):
         )
 
     def _create_nav_bar(self) -> ft.NavigationBar:
-        """
-        Creates and ft.NavigationBar Control containing the available challenges.
+        """Creates and ft.NavigationBar Control containing the available challenges.
 
         Returns:
             ft.NavigationBar
@@ -86,8 +92,7 @@ class ChallengesView(BaseView):
         )
 
     def set_active_challenge(self, name: str) -> None:
-        """
-        Sets the active challenge to be displayed.
+        """Sets the active challenge to be displayed.
 
         Args:
             name: key of the challenge.
@@ -99,9 +104,8 @@ class ChallengesView(BaseView):
         self.controls[-1] = self._active_content
         self.update()
 
-    def on_nav_change(self, _) -> None:
-        """
-        Trigger flow when selected challenge on NavBar changes.
+    def on_nav_change(self, _: ft.RouteChangeEvent) -> None:
+        """Trigger flow when selected challenge on NavBar changes.
 
         Args:
             _: unused event provided by NavBar.

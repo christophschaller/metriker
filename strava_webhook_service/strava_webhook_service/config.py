@@ -1,5 +1,5 @@
-"""
-Config for the webhook service.
+"""Config for the webhook service.
+
 The config is read from env vars, .env files and default values in this order.
 """
 # pylint:disable=duplicate-code
@@ -7,14 +7,10 @@ from pydantic import AnyUrl, BaseSettings
 
 
 class Settings(BaseSettings):
-    """
-    Settings Class storing all settings passed by env vars.
-    """
+    """Settings Class storing all settings passed by env vars."""
 
     class Config:
-        """
-        Config Class defines how settings are loaded from .env files and which prefixes define them.
-        """
+        """Config Class defines how settings are loaded from .env files and which prefixes define them."""
 
         env_file = "./dev.env"
         env_file_encoding = "utf-8"

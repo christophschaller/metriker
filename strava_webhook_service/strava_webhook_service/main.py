@@ -1,5 +1,5 @@
-"""
-Main Api of the strava_webhook_service for metriker.
+"""Main Api of the strava_webhook_service for metriker.
+
 This service will wait for calls from strava telling to update our data or request new activities.
 """
 # pylint:disable=duplicate-code

@@ -1,5 +1,5 @@
-"""
-This module provides the StravaUser dataclass and the StravaUserHandler.
+"""This module provides the StravaUser dataclass and the StravaUserHandler.
+
 StravaUser defines how a user we receive from strava is modeled on our side.
 StravaUserHandler wraps basic data interactions regarding users.
 """
@@ -18,9 +18,7 @@ logger.info(__name__)
 
 @dataclass
 class StravaUser:
-    """
-    Dataclass defining how we model a user pulled from strava.
-    """
+    """Dataclass defining how we model a user pulled from strava."""
 
     # we are shadowing names from the db so this is okayish here
     # pylint: disable=invalid-name
@@ -31,9 +29,7 @@ class StravaUser:
 
 
 class StravaUserHandler(DatabaseConnector):
-    """
-    StravaUserHandler wraps basic data interactions regarding users pulled from strava.
-    """
+    """StravaUserHandler wraps basic data interactions regarding users pulled from strava."""
 
     def __init__(
         self,
@@ -43,22 +39,23 @@ class StravaUserHandler(DatabaseConnector):
         host: str = None,
         port: str = None,
         database: str = None,
-    ):
-        """
+    ) -> None:
+        """Init of StravaUserHandler.
+
         Args:
             secret_key: secret key for encryption of user tokens
             user: username to connect to the data service
             password: ...
             host: host url
             port: service port
-            database: name of the target data
+            database: name of the target data.
         """
         super().__init__(user=user, password=password, host=host, port=port, database=database)
         self.secret_key = secret_key
 
     def __getitem__(self, key: str) -> StravaUser:
-        """
-        Get user by key from data.
+        """Get user by key from data.
+
         Raises KeyError when user is not available.
 
         Args:
@@ -73,8 +70,8 @@ class StravaUserHandler(DatabaseConnector):
         return user
 
     def get(self, user_id: str) -> (None, StravaUser):
-        """
-        Get user by user_id from data.
+        """Get user by user_id from data.
+
         Returns None when user is not available.
 
         Args:
@@ -90,8 +87,7 @@ class StravaUserHandler(DatabaseConnector):
         return None
 
     def add(self, user: StravaUser) -> None:
-        """
-        Add new StravaUser to data.
+        """Add new StravaUser to data.
 
         Args:
             user: StravaUser
@@ -104,8 +100,7 @@ class StravaUserHandler(DatabaseConnector):
         self.insert(new_user)
 
     def update(self, user: StravaUser) -> None:
-        """
-        Update existing StravaUser in data.
+        """Update existing StravaUser in data.
 
         Args:
             user: StravaUser
@@ -124,8 +119,7 @@ class StravaUserHandler(DatabaseConnector):
         self.session.commit()
 
     def delete(self, user_id: str) -> None:
-        """
-        Delete existing StravaUser from data.
+        """Delete existing StravaUser from data.
 
         Args:
             user_id: id of the user on strava
@@ -139,8 +133,7 @@ class StravaUserHandler(DatabaseConnector):
         self.session.commit()
 
     def keys(self) -> List[str]:
-        """
-        Return a list containing all ids of users stored in the database.
+        """Return a list containing all ids of users stored in the database.
 
         Returns:
             List of strings.
@@ -148,8 +141,7 @@ class StravaUserHandler(DatabaseConnector):
         return [obj.id for obj in self.session.query(User.id).all()]
 
     def values(self) -> List[StravaUser]:
-        """
-        Returns a list of StravaUser objects for all users stored in the database.
+        """Returns a list of StravaUser objects for all users stored in the database.
 
         Returns:
             List of StravaUser objects.

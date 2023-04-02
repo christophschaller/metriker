@@ -1,22 +1,24 @@
-"""
-Module holding DataPrivacyView.
-"""
+"""Module holding DataPrivacyView."""
+from __future__ import annotations
+
+import logging
+from typing import TYPE_CHECKING
+
 import flet as ft
 
 from .base_view import BaseView
 
 
 class DataPrivacyView(BaseView):
-    """
-    DataPrivacyView expands the BaseView with Controls to delete and download a logged-in users' data.
-    """
+    """DataPrivacyView expands the BaseView with Controls to delete and download a logged-in users' data."""
 
-    def __init__(self, app, *args, **kwargs):
-        """
+    def __init__(self, app: Metriker, *args, **kwargs) -> None:
+        """DataPrivacyView expands the BaseView with Controls to delete and download a logged-in users' data.
+
         Args:
             app: Metriker object
             *args: list of additional arguments for ft.View
-            **kwargs: dict of additional keyword arguments for ft.View
+            **kwargs: dict of additional keyword arguments for ft.View.
         """
         super().__init__(app, *args, **kwargs)
         self.app = app
@@ -26,6 +28,13 @@ class DataPrivacyView(BaseView):
         self.extend_controls()
 
     def extend_controls(self) -> None:
+        """Adds buttons to download and delete user data to content section.
+
+        Overrides the extend_controls method of BaseView.
+
+        Returns:
+            None
+        """
         self.controls.extend(
             [
                 ft.Container(
@@ -42,8 +51,7 @@ class DataPrivacyView(BaseView):
         )
 
     def create_download_button(self) -> ft.Control:
-        """
-        Creates a Button which should initiate the download of a logged-in users' data.
+        """Creates a Button which should initiate the download of a logged-in users' data.
 
         Returns:
             ft.FilledButton
@@ -55,9 +63,7 @@ class DataPrivacyView(BaseView):
         )
 
     def create_delete_button(self) -> ft.Control:
-        """
-        Creates a Button which should initiate the deletion of a logged-in users' data and their account.
-
+        """Creates a Button which should initiate the deletion of a logged-in users' data and their account.
 
         Returns:
             ft.FilledButton

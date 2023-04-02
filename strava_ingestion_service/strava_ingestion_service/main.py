@@ -1,7 +1,4 @@
-"""
-Main Api of the strava_ingestion_service for metriker.
-"""
-# pylint:disable=duplicate-code
+"""Main Api of the strava_ingestion_service for metriker."""
 import logging.config
 
 import sentry_sdk

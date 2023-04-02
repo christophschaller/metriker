@@ -1,15 +1,11 @@
-"""
-Schemas for the Object expected in webhook events and validation.
-"""
+"""Schemas for the Object expected in webhook events and validation."""
 from typing import Dict
 
 from pydantic import BaseModel, Field
 
 
 class WebhookValidation(BaseModel):
-    """
-    Object expected in request from Strava to validate a webhook subscription.
-    """
+    """Object expected in request from Strava to validate a webhook subscription."""
 
     mode: str = Field(..., alias="hub.mode")
     challenge: str = Field(..., alias="hub.challenge")
@@ -17,9 +13,7 @@ class WebhookValidation(BaseModel):
 
 
 class WebhookEvent(BaseModel):
-    """
-    Object expected in webhook request from strava.
-    """
+    """Object expected in webhook request from strava."""
 
     object_type: str  # activity or athlete
     object_id: int  # activity_id if activity else user_id

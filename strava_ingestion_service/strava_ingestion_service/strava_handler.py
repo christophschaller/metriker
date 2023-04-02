@@ -1,6 +1,4 @@
-"""
-This module provides a wrapper for the strava REST api.
-"""
+"""This module provides a wrapper for the strava REST api."""
 import logging
 import time
 from datetime import datetime, timedelta
@@ -15,16 +13,27 @@ logger.info(__name__)
 
 
 class TokenRefreshFailed(requests.RequestException):
-    """No Access Token was returned"""
+    """No Access Token was returned."""
+
+    def __init__(self, cause: str) -> None:
+        """Init of TokenRefreshFailed Exception.
+
+        Args:
+            cause: content of the response to the token refresh request
+        """
+        super().__init__(f"Requesting Access Token Failed: {cause}")
 
 
-class RateLimitExceeded(requests.RequestException):
-    """The rate limit was exceeded"""
+class DailyRateLimitExceeded(requests.RequestException):
+    """The rate limit was exceeded."""
+
+    def __init__(self) -> None:
+        """Init of DailyRateLimitExceeded Exception."""
+        super().__init__("Daily Rate Limit Exceeded")
 
 
 def sleep_until_next_quarter() -> None:
-    """
-    Get the time interval until the next quarter and sleep till then.
+    """Get the time interval until the next quarter and sleep till then.
 
     Returns:
         None
@@ -38,21 +47,20 @@ def sleep_until_next_quarter() -> None:
 
 
 class StravaHandler:
-    """
-    Wrapper for Strava REST Api
-    """
+    """Wrapper for Strava REST Api."""
 
     def __init__(
         self,
         client_id: str,
         client_secret: str,
         user_handler: StravaUserHandler,
-    ):
-        """
+    ) -> None:
+        """Wrapper for Strava REST Api.
+
         Args:
             client_id: client_id of application on strava
             client_secret: client_secret of application on strava
-            user_handler: wrapper class to handle strava users
+            user_handler: wrapper class to handle strava users.
         """
         self.client_id = client_id
         self.client_secret = client_secret
@@ -67,8 +75,7 @@ class StravaHandler:
         self.timeout = 15
 
     def _request_access_token(self, user_id: str) -> str:
-        """
-        Exchange refresh token for access token and return it.
+        """Exchange refresh token for access token and return it.
 
         Args:
             user_id: user_id on strava for user to get the token for
@@ -93,11 +100,10 @@ class StravaHandler:
             return response.json()["access_token"]
 
         logger.error("Requesting Access Token Failed: %s", response.json())
-        raise TokenRefreshFailed(f"Requesting Access Token Failed: {response.content}")
+        raise TokenRefreshFailed(response.content)
 
     def _track_rate_limit(self, response: requests.Response) -> None:
-        """
-        Read rate limits information from response header and track it in class values.
+        """Read rate limits information from response header and track it in class values.
 
         Args:
             response: requests.Response object from strava REST Api
@@ -120,26 +126,30 @@ class StravaHandler:
             logger.info("No Usage Information In Headers")
 
     def _rate_limit(self) -> None:
-        """
-        Check if any rate limits are reached and throttle requests accordingly.
+        """Check if any rate limits are reached and throttle requests accordingly.
 
         Returns:
             None
         """
         if self.usage_daily >= self.limit_daily:
             logger.error("Daily Rate Limit Exceeded")
-            raise RateLimitExceeded("Daily Rate Limit Exceeded")
+            raise DailyRateLimitExceeded
 
         if self.usage_15_min >= self.limit_15_min:
             logger.warning("15min Rate Limit Exceeded")
             sleep_until_next_quarter()
             self.usage_15_min = 0
 
-    def _request(
-        self, user_id: str, method: str, url: str, data: Dict = None, params: Dict = None
+    def _request(  # noqa: PLR0913 - Ignore: Too many arguments to function call
+        self,
+        user_id: str,
+        method: str,
+        url: str,
+        data: Dict = None,
+        params: Dict = None,
     ) -> (None, requests.Response):
-        """
-        Wrap request to strava REST Api.
+        """Wrap request to strava REST Api.
+
         This handles rate limits and authentication.
 
         Args:
@@ -157,7 +167,12 @@ class StravaHandler:
         self._rate_limit()
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.request(
-            method=method, url=url, headers=headers, data=data, params=params, timeout=self.timeout
+            method=method,
+            url=url,
+            headers=headers,
+            data=data,
+            params=params,
+            timeout=self.timeout,
         )
         self._track_rate_limit(response)
 
@@ -165,29 +180,29 @@ class StravaHandler:
             return response
 
         if not response.ok:
-            if response.status_code == 401:
+            if response.status_code == HTTPStatus.UNAUTHORIZED:
                 # 401 Unauthorized
-                # we already got the access token, so this should be a scope issue
+                # we already got the access token, so this should be a scope issue,
                 # or we don't know what is going on
                 logger.warning("Got response: 401 Unauthorized")
-            if response.status_code == 403:
+            if response.status_code == HTTPStatus.FORBIDDEN:
                 # Forbidden; you cannot access
                 logger.warning("Got response: 403 Resource is forbidden")
-            if response.status_code == 404:
+            if response.status_code == HTTPStatus.NOT_FOUND:
                 # Not found; the requested asset does not exist, or you are not authorized to see it
                 logger.warning("Got response: 404 Resource not found")
-            if response.status_code == 429:
+            if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
                 # Too Many Requests; you have exceeded rate limits
                 logger.warning("Got response: 429 Requests Limit Exceeded")
-            if response.status_code == 500:
+            if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
                 # Strava is having issues
                 logger.warning("Got response: 500 Strava is probably having issues")
 
         return None
 
     def get_logged_in_athlete(self, user_id: str) -> Dict:
-        """
-        implements getLoggedInAthlete
+        """Implements getLoggedInAthlete endpoint.
+
         https://developers.strava.com/docs/reference/#api-Athletes-getLoggedInAthlete
 
         Args:
@@ -202,8 +217,8 @@ class StravaHandler:
         return response.json()
 
     def get_activity_by_id(self, user_id: str, activity_id: str) -> Dict:
-        """
-        implements getActivityById
+        """Implements getActivityById endpoint.
+
         https://developers.strava.com/docs/reference/#api-Activities-getActivityById
 
         Args:
@@ -220,10 +235,13 @@ class StravaHandler:
         return response.json()
 
     def get_logged_in_athlete_activities(
-        self, user_id: str, before: datetime = None, after: datetime = None
+        self,
+        user_id: str,
+        before: datetime = None,
+        after: datetime = None,
     ) -> List[Dict]:
-        """
-        implements getLoggedInAthleteActivities:
+        """Implements getLoggedInAthleteActivities endpoint.
+
         https://developers.strava.com/docs/reference/#api-Activities-getLoggedInAthleteActivities
 
         Args:
