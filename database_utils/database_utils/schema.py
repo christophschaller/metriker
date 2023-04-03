@@ -10,7 +10,7 @@ class User(Base):
 
     __tablename__ = "user"
 
-    id = sa.Column(sa.String(36), primary_key=True)
+    id = sa.Column(sa.String(36), primary_key=True)  # noqa: A003
     name = sa.Column(sa.TEXT)
     refresh_token = sa.Column(sa.TEXT)
 
@@ -28,14 +28,14 @@ class Activity(Base):
 
     __tablename__ = "activity"
 
-    id = sa.Column(sa.String(36), primary_key=True)
+    id = sa.Column(sa.String(36), primary_key=True)  # noqa: A003
     user_id = sa.Column(sa.ForeignKey("user.id"))
     name = sa.Column(sa.TEXT)
     distance = sa.Column(sa.FLOAT)
     moving_time = sa.Column(sa.INTEGER)
     elapsed_time = sa.Column(sa.INTEGER)
     total_elevation_gain = sa.Column(sa.FLOAT)
-    type = sa.Column(sa.TEXT)
+    sport_type = sa.Column(sa.TEXT)
     start_date = sa.Column(sa.TEXT)
 
     def __repr__(self) -> str:
