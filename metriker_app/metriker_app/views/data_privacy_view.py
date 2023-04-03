@@ -65,7 +65,7 @@ class DataPrivacyView(BaseView):
         return ft.FilledButton(
             text="Download My Data",
             icon=ft.icons.DOWNLOAD,
-            on_click=lambda event: print(event.__dict__),
+            on_click=lambda event: logger.info(event.__dict__),
         )
 
     def create_delete_button(self) -> ft.Control:
@@ -77,5 +77,5 @@ class DataPrivacyView(BaseView):
         return ft.FilledTonalButton(
             text="Delete My Data",
             icon=ft.icons.DELETE,
-            on_click=lambda event: print(event.__dict__),
+            on_click=lambda event: logger.info(event.__dict__),
         )
