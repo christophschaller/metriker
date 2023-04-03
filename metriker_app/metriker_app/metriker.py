@@ -111,7 +111,7 @@ class Metriker(ft.UserControl):
                         id=self.user.id,
                         name=self.user["firstname"],
                         refresh_token=self.page.auth.token.refresh_token,
-                    )
+                    ),
                 )
                 # request ingestion existing user activities
                 requests.post(
@@ -125,7 +125,7 @@ class Metriker(ft.UserControl):
                         id=self.user.id,
                         name=self.user["firstname"],
                         refresh_token=self.page.auth.token.refresh_token,
-                    )
+                    ),
                 )
             self.page.update()
             self.page.go("/challenges")

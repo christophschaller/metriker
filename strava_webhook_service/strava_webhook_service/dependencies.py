@@ -43,7 +43,8 @@ def update(event: WebhookEvent) -> None:
     if event.object_type == "athlete":
         user_id = str(event.object_id)
         requests.post(
-            f"{settings.STRAVA_SERVICE_URL}/updateUserById?user_id={user_id}", timeout=settings.STRAVA_SERVICE_TIMEOUT
+            f"{settings.STRAVA_SERVICE_URL}/updateUserById?user_id={user_id}",
+            timeout=settings.STRAVA_SERVICE_TIMEOUT,
         )
 
 

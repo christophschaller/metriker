@@ -54,7 +54,7 @@ class LoginView(BaseView):
                     ink=True,
                     bgcolor=ft.colors.BLUE_GREY_50,
                 ),
-            ]
+            ],
         )
 
     def create_login_button(self) -> ft.Control:
