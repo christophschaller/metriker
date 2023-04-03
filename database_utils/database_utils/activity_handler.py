@@ -30,7 +30,6 @@ class StravaActivity:
     total_elevation_gain: float
     sport_type: str
     start_date: datetime
-    # pylint: enable=invalid-name
 
 
 def parse_activity(activity: Dict) -> StravaActivity:
