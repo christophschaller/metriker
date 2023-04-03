@@ -7,7 +7,7 @@ import logging
 from dataclasses import dataclass
 from typing import List
 
-from flet.security import encrypt, decrypt
+from flet.security import decrypt, encrypt
 
 from database_utils import DatabaseConnector
 from database_utils.schema import User
