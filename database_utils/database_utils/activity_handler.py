@@ -20,8 +20,7 @@ class StravaActivity:
     """Dataclass defining how we model activities pulled from strava."""
 
     # we are shadowing names from the db so this is okayish here
-    # pylint: disable=invalid-name
-    id: str
+    id: str  # noqa: A003
     user_id: str
     name: str
     distance: float
@@ -146,7 +145,7 @@ class StravaActivityHandler(DatabaseConnector):
                 Activity.total_elevation_gain: activity.total_elevation_gain,
                 Activity.sport_type: activity.sport_type,
                 Activity.start_date: activity.start_date,
-            }
+            },
         )
         self.session.commit()
 
