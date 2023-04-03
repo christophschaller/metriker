@@ -5,9 +5,12 @@ from typing import TYPE_CHECKING
 
 import flet as ft
 
-from database_utils.user_handler import StravaUser
-
 from .base_view import BaseView
+
+if TYPE_CHECKING:
+    from database_utils.user_handler import StravaUser
+
+    from ..metriker import Metriker
 
 
 class UserView(BaseView):
