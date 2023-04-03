@@ -5,7 +5,7 @@ StravaActivityHandler wraps basic data interactions regarding activities.
 """
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict
 
 from database_utils import DatabaseConnector
@@ -28,7 +28,7 @@ class StravaActivity:
     moving_time: int
     elapsed_time: int
     total_elevation_gain: float
-    type: str
+    sport_type: str
     start_date: datetime
     # pylint: enable=invalid-name
 
@@ -50,8 +50,9 @@ def parse_activity(activity: Dict) -> StravaActivity:
         moving_time=activity["moving_time"] if activity.get("moving_time") else None,
         elapsed_time=activity["elapsed_time"] if activity.get("elapsed_time") else None,
         total_elevation_gain=activity.get("total_elevation_gain"),
-        type=activity["sport_type"],
-        start_date=datetime.strptime(activity["start_date"], "%Y-%m-%dT%H:%M:%SZ"),
+        sport_type=activity["sport_type"],
+        # the timezone we get from strava for this key is always utc
+        start_date=datetime.strptime(activity["start_date"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc),
     )
 
 
@@ -96,7 +97,7 @@ class StravaActivityHandler(DatabaseConnector):
                 moving_time=activity.moving_time,
                 elapsed_time=activity.elapsed_time,
                 total_elevation_gain=activity.total_elevation_gain,
-                type=activity.type,
+                sport_type=activity.sport_type,
                 start_date=activity.start_date,
             )
         logger.info("Unknown Activity: %s", activity_id)
@@ -120,7 +121,7 @@ class StravaActivityHandler(DatabaseConnector):
             moving_time=activity.moving_time,
             elapsed_time=activity.elapsed_time,
             total_elevation_gain=activity.total_elevation_gain,
-            type=activity.type,
+            type=activity.sport_type,
             start_date=activity.start_date,
         )
         self.insert(new_activity)
@@ -144,7 +145,7 @@ class StravaActivityHandler(DatabaseConnector):
                 Activity.moving_time: activity.moving_time,
                 Activity.elapsed_time: activity.elapsed_time,
                 Activity.total_elevation_gain: activity.total_elevation_gain,
-                Activity.type: activity.type,
+                Activity.sport_type: activity.sport_type,
                 Activity.start_date: activity.start_date,
             }
         )
