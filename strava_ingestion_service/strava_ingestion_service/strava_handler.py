@@ -38,7 +38,7 @@ def sleep_until_next_quarter() -> None:
     Returns:
         None
     """
-    now = datetime.now()
+    now = datetime.now(tz=timezone.utc)
     # get timedelta to the next full 15 minutes
     delta = timedelta(minutes=15 - now.minute % 15, seconds=-now.second)
     logger.warning("Sleeping %s until next full quarter", delta.seconds)
