@@ -8,7 +8,7 @@ from .schema import Base
 class DatabaseConnector:
     """Class managing the connection to SQL data."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913 - Ignore: Too many arguments to function call
         self,
         user: str = None,
         password: str = None,
