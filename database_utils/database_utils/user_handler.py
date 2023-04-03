@@ -21,8 +21,7 @@ class StravaUser:
     """Dataclass defining how we model a user pulled from strava."""
 
     # we are shadowing names from the db so this is okayish here
-    # pylint: disable=invalid-name
-    id: str
+    id: str  # noqa: A003
     name: str
     refresh_token: str
     # pylint: enable=invalid-name
