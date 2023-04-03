@@ -23,5 +23,3 @@ if settings.ENVIRONMENT not in SHOW_DOCS_ENVIRONMENT:
 # create app
 app = FastAPI(**app_config)
 app.include_router(endpoints.router)
-
-# pylint:enable=duplicate-code
