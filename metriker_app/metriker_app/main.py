@@ -1,12 +1,11 @@
 """Entrypoint of the metriker flet app."""
 import logging.config
 
-import sentry_sdk
 import flet as ft
-from flet.auth.oauth_provider import OAuthProvider
-
-from database_utils.user_handler import StravaUserHandler
+import sentry_sdk
 from database_utils.activity_handler import StravaActivityHandler
+from database_utils.user_handler import StravaUserHandler
+from flet.auth.oauth_provider import OAuthProvider
 
 from .config import settings
 from .metriker import Metriker
