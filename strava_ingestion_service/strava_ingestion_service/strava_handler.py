@@ -1,11 +1,11 @@
 """This module provides a wrapper for the strava REST api."""
 import logging
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from http import HTTPStatus
 from typing import Dict, List
 
 import requests
-
 from database_utils.user_handler import StravaUserHandler
 
 logger = logging.getLogger(__name__)
