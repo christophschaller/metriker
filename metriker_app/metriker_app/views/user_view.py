@@ -79,7 +79,7 @@ class UserView(BaseView):
         for user in self.app.user_handler.values():
             sport_types = set(
                 [
-                    activity.type
+                    activity.sport_type
                     for activity in self.app.activity_handler.get_user_activities(
                         user.id,
                         start_date=start_date,
@@ -188,7 +188,7 @@ class UserView(BaseView):
             sport_types = list(
                 set(
                     [
-                        activity.type
+                        activity.sport_type
                         for activity in self.app.activity_handler.get_user_activities(
                             user.id,
                             start_date=start_date,

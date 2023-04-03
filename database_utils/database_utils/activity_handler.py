@@ -185,7 +185,7 @@ class StravaActivityHandler(DatabaseConnector):
         query = self.session.query(Activity).filter(Activity.user_id == user_id)  # .all()
 
         if sport_type is not None:
-            query = query.filter(Activity.type == sport_type)
+            query = query.filter(Activity.sport_type == sport_type)
         if start_date is not None:
             query = query.filter(Activity.start_date >= start_date)
         if end_date is not None:

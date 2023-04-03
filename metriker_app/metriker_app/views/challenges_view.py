@@ -373,7 +373,7 @@ class ChallengesView(BaseView):
                         start_date="2023-01-01 00:00:00",
                         end_date="2023-01-02 00:00:00",
                     )
-                    # if activity.type == sport
+                    # if activity.sport_type == sport
                 ]
             )
             print(distance)
