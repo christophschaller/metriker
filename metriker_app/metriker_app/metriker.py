@@ -1,16 +1,15 @@
 """Main module of the metriker flet app."""
 import logging.config
 
-import sentry_sdk
 import flet as ft
 import requests
+import sentry_sdk
+from database_utils.activity_handler import StravaActivityHandler
+from database_utils.user_handler import StravaUser, StravaUserHandler
 from flet.auth.oauth_provider import OAuthProvider
 
-from database_utils.user_handler import StravaUserHandler, StravaUser
-from database_utils.activity_handler import StravaActivityHandler
-
 from .config import settings
-from .views import LoginView, ChallengesView, UserView, DataPrivacyView
+from .views import ChallengesView, DataPrivacyView, LoginView, UserView
 
 # setup logging
 logging.config.fileConfig(settings.LOGGING_CONFIG_PATH, disable_existing_loggers=False)
