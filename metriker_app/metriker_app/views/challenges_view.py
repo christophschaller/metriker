@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import flet as ft
 
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import pandas as pd
 import plotly.express as px
 from flet.plotly_chart import PlotlyChart
