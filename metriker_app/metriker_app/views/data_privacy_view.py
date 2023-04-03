@@ -8,6 +8,12 @@ import flet as ft
 
 from .base_view import BaseView
 
+if TYPE_CHECKING:
+    from ..metriker import Metriker
+
+logger = logging.getLogger(__name__)
+logger.info(__name__)
+
 
 class DataPrivacyView(BaseView):
     """DataPrivacyView expands the BaseView with Controls to delete and download a logged-in users' data."""
