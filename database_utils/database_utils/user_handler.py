@@ -24,7 +24,6 @@ class StravaUser:
     id: str  # noqa: A003
     name: str
     refresh_token: str
-    # pylint: enable=invalid-name
 
 
 class StravaUserHandler(DatabaseConnector):
@@ -113,7 +112,7 @@ class StravaUserHandler(DatabaseConnector):
                 User.id: user.id,
                 User.name: user.name,
                 User.refresh_token: encrypt(user.refresh_token, self.secret_key),
-            }
+            },
         )
         self.session.commit()
 
