@@ -119,7 +119,7 @@ class StravaActivityHandler(DatabaseConnector):
             moving_time=activity.moving_time,
             elapsed_time=activity.elapsed_time,
             total_elevation_gain=activity.total_elevation_gain,
-            type=activity.sport_type,
+            sport_type=activity.sport_type,
             start_date=activity.start_date,
         )
         self.insert(new_activity)
