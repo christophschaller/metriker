@@ -2,7 +2,14 @@
 
 Defining Core functionality for every view the App offers.
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import flet as ft
+
+if TYPE_CHECKING:
+    from ..metriker import Metriker
 
 
 class BaseView(ft.View):
@@ -48,7 +55,6 @@ class BaseView(ft.View):
         Returns:
             None
         """
-        # self.controls.extend([])
         raise NotImplementedError
 
     def _create_avatar(self) -> ft.Control:
