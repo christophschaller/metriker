@@ -2,10 +2,10 @@
 
 from database_utils.activity_handler import StravaActivityHandler, parse_activity
 from database_utils.user_handler import StravaUserHandler
+from fastapi import APIRouter
 
-from .strava_handler import StravaHandler
 from .config import settings
-
+from .strava_handler import StravaHandler
 
 # initiate database wrappers
 user_handler = StravaUserHandler(
