@@ -1,20 +1,16 @@
-"""
-Config for the flet webapp.
+"""Config for the flet webapp.
+
 The config is read from env vars, .env files and default values in this order.
 """
-# pylint:disable=duplicate-code
-from pydantic import AnyUrl, SecretStr, BaseSettings
+
+from pydantic import AnyUrl, BaseSettings, SecretStr
 
 
 class Settings(BaseSettings):
-    """
-    Settings Class storing all settings passed by env vars.
-    """
+    """Settings Class storing all settings passed by env vars."""
 
     class Config:
-        """
-        Config Class defines how settings are loaded from .env files and which prefixes define them.
-        """
+        """Config Class defines how settings are loaded from .env files and which prefixes define them."""
 
         env_file = "./dev.env"
         env_file_encoding = "utf-8"
@@ -47,5 +43,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-# pylint:enable=duplicate-code

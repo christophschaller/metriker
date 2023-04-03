@@ -1,7 +1,4 @@
-"""
-Main Api of the strava_ingestion_service for metriker.
-"""
-# pylint:disable=duplicate-code
+"""Main Api of the strava_ingestion_service for metriker."""
 import logging.config
 
 import sentry_sdk
@@ -26,5 +23,3 @@ if settings.ENVIRONMENT not in SHOW_DOCS_ENVIRONMENT:
 # create app
 app = FastAPI(**app_config)
 app.include_router(endpoints.router)
-
-# pylint:enable=duplicate-code

@@ -1,15 +1,12 @@
-"""
-Logic to execute the updates and changes to our data we get from webhook events.
-"""
+"""Logic to execute the updates and changes to our data we get from webhook events."""
 import requests
 
-from .schemas import WebhookEvent
 from .config import settings
+from .schemas import WebhookEvent
 
 
 def create(event: WebhookEvent) -> None:
-    """
-    Get newly created activity from strava after receiving create event.
+    """Get newly created activity from strava after receiving create event.
 
     Args:
         event: WebhookEvent
@@ -27,8 +24,7 @@ def create(event: WebhookEvent) -> None:
 
 
 def update(event: WebhookEvent) -> None:
-    """
-    Update athlete or activity after receiving update event.
+    """Update athlete or activity after receiving update event.
 
     Args:
         event: WebhookEvent
@@ -47,13 +43,13 @@ def update(event: WebhookEvent) -> None:
     if event.object_type == "athlete":
         user_id = str(event.object_id)
         requests.post(
-            f"{settings.STRAVA_SERVICE_URL}/updateUserById?user_id={user_id}", timeout=settings.STRAVA_SERVICE_TIMEOUT
+            f"{settings.STRAVA_SERVICE_URL}/updateUserById?user_id={user_id}",
+            timeout=settings.STRAVA_SERVICE_TIMEOUT,
         )
 
 
 def delete(event: WebhookEvent) -> None:
-    """
-    Delete activity or athlete and all their activities after receiving delete event.
+    """Delete activity or athlete and all their activities after receiving delete event.
 
     Args:
         event: WebhookEvent

@@ -1,24 +1,32 @@
-"""
-This module holds the BaseView class for the Metriker App.
+"""This module holds the BaseView class for the Metriker App.
+
 Defining Core functionality for every view the App offers.
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import flet as ft
+
+if TYPE_CHECKING:
+    from ..metriker import Metriker
 
 
 class BaseView(ft.View):
-    """
-    BaseView serves as the Base class for all views in the Metriker App.
+    """BaseView serves as the Base class for all views in the Metriker App.
+
     It defines an AppBar on the top for navigation and basic requirements for auth flows.
     """
 
-    def __init__(self, app, *args, route: str = None, title: str = "Honigmann", **kwargs):
-        """
+    def __init__(self, app: Metriker, *args, route: str = None, title: str = "Honigmann", **kwargs) -> None:
+        """Init of BaseView.
+
         Args:
             app: Metriker object
             *args: list of additional arguments for ft.View
             route: route of the view
             title: title displayed in the AppBar
-            **kwargs: dict of additional keyword arguments for ft.View
+            **kwargs: dict of additional keyword arguments for ft.View.
         """
         super().__init__(*args, **kwargs)
         self.app = app
@@ -37,19 +45,20 @@ class BaseView(ft.View):
         self.controls = [self.app_bar]
 
     def extend_controls(self) -> None:
-        """
-        This has to be implemented by Child classes.
+        """This has to be implemented by Child classes.
+
         It must extend the controls of the underlying ft.View object to hold the content to be displayed.
+
+        Example:
+            self.controls.extend([])
 
         Returns:
             None
         """
-        # self.controls.extend([])
         raise NotImplementedError
 
     def _create_avatar(self) -> ft.Control:
-        """
-        Creates an avatar icon for the logged-in user.
+        """Creates an avatar icon for the logged-in user.
 
         Returns:
             ft.CircleAvatar holding the avatar representation.
@@ -71,8 +80,7 @@ class BaseView(ft.View):
         )
 
     def _create_logout_button(self) -> ft.Control:
-        """
-        Creates as Button to trigger the logout flow.
+        """Creates as Button to trigger the logout flow.
 
         Returns:
             ft.FilledTonalButton
@@ -86,8 +94,7 @@ class BaseView(ft.View):
         )
 
     def _create_avatar_button(self) -> ft.Control:
-        """
-        Create PopupMenuButton which combines the user avatar and logout button controls.
+        """Create PopupMenuButton which combines the user avatar and logout button controls.
 
         Returns:
             ft.PopupMenuButton
@@ -102,8 +109,8 @@ class BaseView(ft.View):
         return ft.PopupMenuButton(content=self._create_avatar(), items=appbar_items)
 
     def _create_app_bar(self) -> ft.Control:
-        """
-        Creates and ft.AppBar Control containing a popup avatar button.
+        """Creates and ft.AppBar Control containing a popup avatar button.
+
         This combines the other controls defined in methods of this class.
 
         Returns:

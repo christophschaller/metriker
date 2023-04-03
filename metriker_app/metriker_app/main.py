@@ -1,14 +1,11 @@
-"""
-Entrypoint of the metriker flet app.
-"""
+"""Entrypoint of the metriker flet app."""
 import logging.config
 
-import sentry_sdk
 import flet as ft
-from flet.auth.oauth_provider import OAuthProvider
-
-from database_utils.user_handler import StravaUserHandler
+import sentry_sdk
 from database_utils.activity_handler import StravaActivityHandler
+from database_utils.user_handler import StravaUserHandler
+from flet.auth.oauth_provider import OAuthProvider
 
 from .config import settings
 from .metriker import Metriker
@@ -21,8 +18,8 @@ sentry_sdk.init(dsn=settings.SENTRY_DSN)
 
 
 def main(page: ft.Page) -> None:
-    """
-    Initialize all Components of the Metriker App.
+    """Initialize all Components of the Metriker App.
+
     This function is meant to be called directly by flet.
 
     Args:
@@ -43,7 +40,6 @@ def main(page: ft.Page) -> None:
         user_scopes=[settings.STRAVA_USER_SCOPES],
         user_id_fn=lambda user: user["id"],
     )
-    # pylint:disable=duplicate-code
     user_handler = StravaUserHandler(
         secret_key=settings.SECRET_KEY.get_secret_value(),
         user=settings.DB_USER,
@@ -59,7 +55,6 @@ def main(page: ft.Page) -> None:
         port=settings.DB_PORT,
         database=settings.DB_NAME,
     )
-    # pylint:enable=duplicate-code
 
     app = Metriker(
         page=page,
