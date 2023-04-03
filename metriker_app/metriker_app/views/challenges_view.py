@@ -2,10 +2,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import flet as ft
 
 from .base_view import BaseView
+
+if TYPE_CHECKING:
+    from ..metriker import Metriker
 
 
 @dataclass
@@ -73,7 +77,7 @@ class ChallengesView(BaseView):
                     expand=True,
                 ),
                 self._active_content,
-            ]
+            ],
         )
 
     def _create_nav_bar(self) -> ft.NavigationBar:
