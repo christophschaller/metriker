@@ -3,8 +3,8 @@ from typing import Dict
 
 from fastapi import APIRouter
 
-from .schemas import WebhookValidation, WebhookEvent
-from .dependencies import create, update, delete
+from .dependencies import create, delete, update
+from .schemas import WebhookEvent, WebhookValidation
 
 router = APIRouter()
 
