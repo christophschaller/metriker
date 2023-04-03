@@ -29,7 +29,7 @@ class StravaUser:
 class StravaUserHandler(DatabaseConnector):
     """StravaUserHandler wraps basic data interactions regarding users pulled from strava."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913 - Ignore: Too many arguments to function call
         self,
         secret_key: str,
         user: str = None,
