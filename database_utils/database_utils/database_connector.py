@@ -42,7 +42,7 @@ class DatabaseConnector:
         """Initiate the connection to the data service and populate the necessary obj variables."""
         uri = f"sqlite:///{self.database}.db"
         if self.host:
-            uri = f"mariadb+mariadbconnector://{self.user}:{self.password}" f"@{self.host}:{self.port}/{self.database}"
+            uri = f"mariadb+mariadbconnector://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
         self.engine = sa.create_engine(uri)
 
         session = sessionmaker(self.engine)
