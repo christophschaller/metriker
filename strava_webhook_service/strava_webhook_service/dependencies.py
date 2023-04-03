@@ -1,8 +1,8 @@
 """Logic to execute the updates and changes to our data we get from webhook events."""
 import requests
 
-from .schemas import WebhookEvent
 from .config import settings
+from .schemas import WebhookEvent
 
 
 def create(event: WebhookEvent) -> None:
