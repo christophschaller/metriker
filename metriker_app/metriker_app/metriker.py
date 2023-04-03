@@ -21,7 +21,7 @@ sentry_sdk.init(dsn=settings.SENTRY_DSN)
 class Metriker(ft.UserControl):
     """This class defines the frame of the webapp and its interfaces."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913 - Ignore: Too many arguments to function call
         self,
         page: ft.Page,
         auth_provider: OAuthProvider,
