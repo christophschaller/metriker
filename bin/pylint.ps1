@@ -1,1 +1,0 @@
-pylint --recursive=y $PSScriptRoot/..
