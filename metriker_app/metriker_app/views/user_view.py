@@ -38,16 +38,17 @@ class UserView(BaseView):
         self.extend_controls()
 
     def extend_controls(self) -> None:
+        """Body."""
         self.controls.extend(
             [
                 ft.Text(self.user.name),
                 ft.Container(self.create_chart("2023-01-01 00:00:05", "2023-03-03 00:00:05", "frame")),
                 ft.Container(self.create_table("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
-            ]
+            ],
         )
 
     def create_table(self, start_date, end_date):
-        """creates a ft.DataTable with get_table_rows function
+        """Creates a ft.DataTable with get_table_rows function.
 
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
@@ -66,7 +67,7 @@ class UserView(BaseView):
         )
 
     def get_table_rows(self, start_date, end_date):
-        """returns flet datarows for a flet table
+        """Returns flet datarows for a flet table.
 
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
@@ -77,16 +78,14 @@ class UserView(BaseView):
         """
         user_distance = []
         for user in self.app.user_handler.values():
-            sport_types = set(
-                [
-                    activity.sport_type
-                    for activity in self.app.activity_handler.get_user_activities(
-                        user.id,
-                        start_date=start_date,
-                        end_date=end_date,
-                    )
-                ]
-            )
+            sport_types = {
+                activity.sport_type
+                for activity in self.app.activity_handler.get_user_activities(
+                    user.id,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+            }
 
             for sport_type in sport_types:
                 distance = (
@@ -99,13 +98,12 @@ class UserView(BaseView):
                                 start_date=start_date,
                                 end_date=end_date,
                             )
-                        ]
+                        ],
                     )
                     / 1000
                 )
 
                 user_distance.append((sport_type, distance))
-            # print(user_distance)
 
         sorted_user_distance = sorted(user_distance, key=lambda x: x[1], reverse=True)
 
@@ -118,7 +116,7 @@ class UserView(BaseView):
                         ft.DataCell(
                             ft.Text(
                                 elem[0],
-                            )
+                            ),
                         ),
                         ft.DataCell(ft.Text(elem[1])),
                     ],
@@ -126,19 +124,37 @@ class UserView(BaseView):
             )
         return rows
 
-    def get_sport_plot(self, start_date, end_date, frame):
-        """returns all values for a plot with plotly in a pd dataframe format
+    def get_sport_plot(self, start_date, end_date):
+        """Returns all values for a plot with plotly in a pd dataframe format.
 
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
             end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
-            frame(str): month or empty changes the detail leve of the plot (weeks or months)
 
         Returns:
             get_sport_plot(pandas dataframe): dataframe for plotly chart
         """
-        start_date = datetime.strptime(str(start_date), "%Y-%m-%d %H:%M:%S")
-        end_date = datetime.strptime(str(end_date), "%Y-%m-%d %H:%M:%S")
+
+        def convert_to_datetime(date):
+            """Converts string to datetime object if needet and reises error if type isnt str or datetime.
+
+            Args:
+                date (any): _description_
+
+            Returns:
+                datetime: "%Y-%m-%d %H:%M:%S"
+            """
+            if type(date) == str:
+                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+            elif type(date) == datetime:
+                return_date = date
+            else:
+                print("ERROR: Date is neither str nor datetime format")
+
+            return return_date
+
+        start_date = convert_to_datetime(start_date)
+        end_date = convert_to_datetime(end_date)
 
         """# Month steps
         if frame == "month":
@@ -186,16 +202,14 @@ class UserView(BaseView):
             week_columns = []
 
             sport_types = list(
-                set(
-                    [
-                        activity.sport_type
-                        for activity in self.app.activity_handler.get_user_activities(
-                            user.id,
-                            start_date=start_date,
-                            end_date=end_date,
-                        )
-                    ]
-                )
+                {
+                    activity.sport_type
+                    for activity in self.app.activity_handler.get_user_activities(
+                        user.id,
+                        start_date=start_date,
+                        end_date=end_date,
+                    )
+                },
             )
 
             # Determine the first and last day of the first week
@@ -221,7 +235,7 @@ class UserView(BaseView):
                                     start_date=new_start_date,
                                     end_date=new_end_date,
                                 )
-                            ]
+                            ],
                         )
                         / 1000
                     )
@@ -237,20 +251,21 @@ class UserView(BaseView):
 
         return dataframe
 
-    def create_chart(self, start_date, end_date, frame):
-        """uses the function get_sport_plot to generate a dataframe and creates a PlotlyChart with that
+    def create_chart(self, start_date, end_date):
+        """Uses the function get_sport_plot to generate a dataframe and creates a PlotlyChart with that.
+
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date.
 
         Returns:
             (str in format "%Y-%m-%d %H:%M:%S")(PlotlyChart): chart with values
         """
         return PlotlyChart(
             px.line(
-                self.get_sport_plot(start_date, end_date, frame).transpose(),
+                self.get_sport_plot(start_date, end_date).transpose(),
                 template="simple_white",
                 line_shape="spline",
                 labels={"value": "Kilometer", "index": "Monate"},
-            )
+            ),
         )

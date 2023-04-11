@@ -3,13 +3,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from typing import TYPE_CHECKING
 
 import flet as ft
-
-from datetime import date, datetime, timedelta
-from dateutil.relativedelta import relativedelta
 import pandas as pd
 import plotly.express as px
 from flet.plotly_chart import PlotlyChart
@@ -40,14 +36,22 @@ CHALLENGES = {
 
 
 class ChallengeContent(ft.Column):
+    """contains two cointainers with a table and a graph.
+
+    Args:
+        ft (_type_): _description_
+    """
+
     def __init__(self, app, sport_type, start_date, end_date, *args, **kwargs):
-        """class to build screens for challenges with tabels and plots
+        """Class to build screens for challenges with tabels and plots.
 
         Args:
             app (_type_): _description_
             sport_type (str): sport_type sting from strava activity sport_type e.g. "Ride", "Run",..
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
             end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            *args(_type_):something
+            **kwargs(_type_):something
         """
         super().__init__(app, *args, **kwargs)
         self.app = app
@@ -56,12 +60,12 @@ class ChallengeContent(ft.Column):
         self.end_date = end_date
 
         self.controls = [
-            ft.Container(self.create_chart("2023-01-01 00:00:05", "2023-03-03 00:00:05", "frame")),
+            ft.Container(self.create_chart("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
             ft.Container(self.create_table("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
         ]
 
     def get_table_rows(self, start_date, end_date):
-        """returns flet datarows for a flet table
+        """Returns flet datarows for a flet table.
 
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
@@ -82,7 +86,7 @@ class ChallengeContent(ft.Column):
                             start_date=start_date,
                             end_date=end_date,
                         )
-                    ]
+                    ],
                 )
                 / 1000
             )
@@ -97,13 +101,11 @@ class ChallengeContent(ft.Column):
                     cells=[
                         ft.DataColumn(ft.Text(i + 1)),
                         ft.DataCell(
-                            # ft.Text(elem[0].name),
                             ft.TextButton(
                                 text=elem[0].name,
                                 data=elem[0].id,
                                 on_click=lambda e: self.app.page.go(f"/user/{e.control.data}"),
-                            )
-                            # on_tap=lambda e: self.app.page.go(f"/user/{elem[0].id}"),
+                            ),
                         ),
                         ft.DataCell(ft.Text(elem[1])),
                     ],
@@ -111,124 +113,106 @@ class ChallengeContent(ft.Column):
             )
         return rows
 
-    def get_sport_plot(self, start_date, end_date, frame):
-        """returns all values for a plot with plotly in a pd dataframe format
+    def get_sport_plot(self, start_date, end_date):
+        """Returns all values for a plot with plotly in a pd dataframe format.
 
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
             end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
-            frame(str): month or empty changes the detail leve of the plot (weeks or months)
 
         Returns:
             get_sport_plot(pandas dataframe): dataframe for plotly chart
         """
-        start_date = datetime.strptime(str(start_date), "%Y-%m-%d %H:%M:%S")
-        end_date = datetime.strptime(str(end_date), "%Y-%m-%d %H:%M:%S")
+
+        def convert_to_datetime(date):
+            """Converts string to datetime object if needet and reises error if type isnt str or datetime.
+
+            Args:
+                date (any): _description_
+
+            Returns:
+                datetime: "%Y-%m-%d %H:%M:%S"
+            """
+            if type(date) == str:
+                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+            elif type(date) == datetime:
+                return_date = date
+            else:
+                print("ERROR: Date is neither str nor datetime format")
+
+            return return_date
+
+        start_date = convert_to_datetime(start_date)
+        end_date = convert_to_datetime(end_date)
 
         # Month steps
-        if frame == "month":
-            all_activities = []
-            for user in self.app.user_handler.values():
-                month_list = []
-                for month in range(end_date.month - start_date.month + 1):
-                    month_list.append(start_date.month + month)
-
-                user_activities = []
-                for month in month_list:
-                    new_start_date = datetime(2023, month, 1, 0, 0, 0)
-                    new_end_date = datetime(2023, month + 1, 1, 0, 0, 0) - timedelta(seconds=1)
-
-                    month_distance = (
-                        sum(
-                            [
-                                activity.distance
-                                for activity in self.app.activity_handler.get_user_activities(
-                                    user.id,
-                                    sport_type=self.sport_type,
-                                    start_date=new_start_date,
-                                    end_date=new_end_date,
-                                )
-                            ]
-                        )
-                        / 1000
-                    )
-                    user_activities.append(month_distance)
-                all_activities.append(user_activities)
-
-            month_columns = []
-            for i in range(0, end_date.month - start_date.month + 1):
-                next_month = start_date + relativedelta(months=i)
-                next_month_name = next_month.strftime("%B")
-                month_columns.append(next_month_name)
-
-            usernames_index = [user.name for user in self.app.user_handler.values()]
-            dataframe = pd.DataFrame(all_activities, columns=month_columns, index=usernames_index)
 
         # Week steps
-        else:
-            all_activities = []
-            for user in self.app.user_handler.values():
-                week_columns = []
-                user_activities = []
 
-                # Determine the first and last day of the first week
-                first_day = start_date - timedelta(days=start_date.weekday())
-                last_day = first_day + timedelta(days=7) - timedelta(seconds=1)
+        all_activities = []
+        for user in self.app.user_handler.values():
+            week_columns = []
+            user_activities = []
 
-                # Loop through each week and print the first day, last day, and ISO week number
-                while first_day.date() <= end_date.date():
-                    year, week_num, day_num = first_day.isocalendar()
-                    week_columns.append(f"woche {year}-{week_num}")
-                    # print("First day:", first_day)
-                    # print("Last day:", last_day)
-                    new_start_date = first_day
-                    new_end_date = last_day
+            # Determine the first and last day of the first week
+            first_day = start_date - timedelta(days=start_date.weekday())
+            last_day = first_day + timedelta(days=7) - timedelta(seconds=1)
 
-                    week_distance = (
-                        sum(
-                            [
-                                activity.distance
-                                for activity in self.app.activity_handler.get_user_activities(
-                                    user.id,
-                                    sport_type=self.sport_type,
-                                    start_date=new_start_date,
-                                    end_date=new_end_date,
-                                )
-                            ]
-                        )
-                        / 1000
+            # Loop through each week and print the first day, last day, and ISO week number
+            while first_day.date() <= end_date.date():
+                year, week_num, day_num = first_day.isocalendar()
+                week_columns.append(f"woche {year}-{week_num}")
+                new_start_date = first_day
+                new_end_date = last_day
+
+                week_distance = (
+                    sum(
+                        [
+                            activity.distance
+                            for activity in self.app.activity_handler.get_user_activities(
+                                user.id,
+                                sport_type=self.sport_type,
+                                start_date=new_start_date,
+                                end_date=new_end_date,
+                            )
+                        ],
                     )
-                    user_activities.append(week_distance)
+                    / 1000
+                )
+                user_activities.append(week_distance)
 
-                    # Increment to the next week
-                    first_day = last_day + timedelta(days=1)
-                    last_day = first_day + timedelta(days=6)
+                # Increment to the next week
+                first_day = last_day + timedelta(days=1)
+                last_day = first_day + timedelta(days=6)
+                #
+
                 all_activities.append(user_activities)
                 usernames_index = [user.name for user in self.app.user_handler.values()]
                 dataframe = pd.DataFrame(all_activities, columns=week_columns, index=usernames_index)
         return dataframe
 
-    def create_chart(self, start_date, end_date, frame):
-        """uses the function get_sport_plot to generate a dataframe and creates a PlotlyChart with that
+    def create_chart(self, start_date, end_date):
+        """Uses the function get_sport_plot to generate a dataframe and creates a PlotlyChart with that.
+
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date.
 
         Returns:
             (str in format "%Y-%m-%d %H:%M:%S")(PlotlyChart): chart with values
         """
         return PlotlyChart(
             px.line(
-                self.get_sport_plot(start_date, end_date, frame).transpose(),
+                self.get_sport_plot(start_date, end_date).transpose(),
                 template="simple_white",
                 line_shape="spline",
                 labels={"value": "Kilometer", "index": "Monate"},
-            )
+            ),
         )
         # , expand=True)# self._active_content
 
     def create_table(self, start_date, end_date):
-        """creates a ft.DataTable with get_table_rows function
+        """Creates a ft.DataTable with get_table_rows function.
 
         Args:
             start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
@@ -282,7 +266,6 @@ class ChallengesView(BaseView):
         self.nav_bar = self._create_nav_bar()
         self._active_content = ft.Container()
 
-        # add controls to frame
         self.extend_controls()
 
     def extend_controls(self) -> None:
@@ -318,7 +301,7 @@ class ChallengesView(BaseView):
                     expand=True,
                 ),
                 # self._active_content,
-            ]
+            ],
         )
 
     def _create_nav_bar(self) -> ft.NavigationBar:
@@ -362,6 +345,14 @@ class ChallengesView(BaseView):
         self.page.go(f"/challenges/{selected_challenge.name}")
 
     def get_table_rows(self, sport):  # sport="Ride" e.g.
+        """Returns all content rows for the table depending on which sport.
+
+        Args:
+            sport (string): run, ride,...
+
+        Returns:
+            list of ft.DataRows: _description_
+        """
         user_distance = []
         for user in self.app.user_handler.values():
             distance = sum(
@@ -374,9 +365,8 @@ class ChallengesView(BaseView):
                         end_date="2023-01-02 00:00:00",
                     )
                     # if activity.sport_type == sport
-                ]
+                ],
             )
-            print(distance)
             user_distance.append((user, distance))
 
         sorted_user_distance = sorted(user_distance, key=lambda x: x[1], reverse=True)
@@ -389,7 +379,7 @@ class ChallengesView(BaseView):
                         ft.DataColumn(ft.Text(i + 1)),
                         ft.DataCell(
                             ft.Text(elem[0].name),
-                            on_tap=lambda e: self.app.page.go(f"/user/{elem[0].id}"),
+                            on_tap=self.app.page.go(f"/user/{elem[0].id}"),
                         ),  # TODO: find better way to link users
                         ft.DataCell(ft.Text(elem[1])),
                     ],
