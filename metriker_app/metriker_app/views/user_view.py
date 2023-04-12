@@ -13,6 +13,9 @@ from flet.plotly_chart import PlotlyChart
 
 from .base_view import BaseView
 
+logger = logging.getLogger(__name__)
+logger.info(__name__)
+
 if TYPE_CHECKING:
     from database_utils.user_handler import StravaUser
 
@@ -154,61 +157,21 @@ class UserView(BaseView):
             Returns:
                 datetime: "%Y-%m-%d %H:%M:%S"
             """
-            if type(date) == str:
+            if isinstance(date, str):
                 return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S").replace(
                     tzinfo=tzlocal(),
                 )
-            elif type(date) == datetime:
+            elif isinstance(date, datetime):
                 return_date = date
             else:
-                logging.error("ERROR: Date is neither str nor datetime format")
+                logger.error("Date is neither str nor datetime format")
+                raise TypeError
 
             return return_date
 
         start_date = convert_to_datetime(start_date)
         end_date = convert_to_datetime(end_date)
 
-        """# Month steps
-        if frame == "month":
-            all_activities = []
-            for user in self.app.user_handler.values():
-                month_list = []
-                for month in range(end_date.month - start_date.month + 1):
-                    month_list.append(start_date.month + month)
-
-                user_activities = []
-                for month in month_list:
-                    new_start_date = datetime(2023, month, 1, 0, 0, 0)
-                    new_end_date = datetime(2023, month + 1, 1, 0, 0, 0) - timedelta(seconds=1)
-
-                    month_distance = (
-                        sum(
-                            [
-                                activity.distance
-                                for activity in self.app.activity_handler.get_user_activities(
-                                    user.id,
-                                    sport_type="Ride",
-                                    start_date=new_start_date,
-                                    end_date=new_end_date,
-                                )
-                            ]
-                        )
-                        / 1000
-                    )
-                    user_activities.append(month_distance)
-                all_activities.append(user_activities)
-
-            month_columns = []
-            for i in range(0, end_date.month - start_date.month + 1):
-                next_month = start_date + relativedelta(months=i)
-                next_month_name = next_month.strftime("%B")
-                month_columns.append(next_month_name)
-
-            sport_type_index = [user.name for user in self.app.user_handler.values()]
-            dataframe = pd.DataFrame(all_activities, columns=month_columns, index=sport_type_index)
-
-        # Week steps
-        else:"""
         all_activities = []
         for user in self.app.user_handler.values():
             week_columns = []

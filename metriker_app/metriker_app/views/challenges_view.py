@@ -162,7 +162,6 @@ class ChallengeContent(ft.Column):
         # Month steps
 
         # Week steps
-
         all_activities = []
         for user in self.app.user_handler.values():
             week_columns = []

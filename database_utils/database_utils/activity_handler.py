@@ -170,8 +170,7 @@ class StravaActivityHandler(DatabaseConnector):
         start_date: datetime = None,
         end_date: datetime = None,
     ) -> List[StravaActivity]:
-        """
-         Return activity information for a userid
+        """Return activity information for a userid.
 
         Args:
             user_id: id of the user
@@ -194,7 +193,6 @@ class StravaActivityHandler(DatabaseConnector):
         activities = query.all()
 
         logger.info("got %s activities for user %s", len(activities), user_id)
-        print("got %s activities for user %s", len(activities), user_id)
 
         return [
             StravaActivity(
