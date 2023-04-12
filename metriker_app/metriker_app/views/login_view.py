@@ -43,7 +43,10 @@ class LoginView(BaseView):
                     content=ft.Column(
                         alignment=ft.MainAxisAlignment.CENTER,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        controls=[self.create_login_button(), ft.Checkbox(label="Remember Me", value=False)],
+                        controls=[
+                            self.create_login_button(),
+                            ft.Checkbox(label="Remember Me", value=False),
+                        ],
                     ),
                     margin=10,
                     padding=10,

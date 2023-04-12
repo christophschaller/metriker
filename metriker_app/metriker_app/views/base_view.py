@@ -18,7 +18,14 @@ class BaseView(ft.View):
     It defines an AppBar on the top for navigation and basic requirements for auth flows.
     """
 
-    def __init__(self, app: Metriker, *args, route: str = None, title: str = "Honigmann", **kwargs) -> None:
+    def __init__(
+        self,
+        app: Metriker,
+        *args,
+        route: str = None,
+        title: str = "Honigmann",
+        **kwargs,
+    ) -> None:
         """Init of BaseView.
 
         Args:
@@ -104,7 +111,10 @@ class BaseView(ft.View):
         appbar_items = [
             ft.PopupMenuItem(content=self._create_logout_button()),
             ft.PopupMenuItem(),
-            ft.PopupMenuItem(text="Data Privacy", on_click=lambda _: self.app.page.go("/data_privacy")),
+            ft.PopupMenuItem(
+                text="Data Privacy",
+                on_click=lambda _: self.app.page.go("/data_privacy"),
+            ),
         ]
         return ft.PopupMenuButton(content=self._create_avatar(), items=appbar_items)
 
@@ -119,7 +129,12 @@ class BaseView(ft.View):
         return ft.AppBar(
             leading=None,
             leading_width=75,
-            title=ft.Text(self.title, font_family="sen", size=32, text_align=ft.TextAlign("center")),
+            title=ft.Text(
+                self.title,
+                font_family="sen",
+                size=32,
+                text_align=ft.TextAlign("center"),
+            ),
             center_title=True,
             toolbar_height=75,
             bgcolor=ft.colors.WHITE,

@@ -33,7 +33,11 @@ CHALLENGES = {
         icon=ft.icons.PEDAL_BIKE,
         content=ft.Container(content=ft.Text("Bike")),
     ),
-    "run": Challenge(name="run", icon=ft.icons.HIKING, content=ft.Container(content=ft.Text("run"))),
+    "run": Challenge(
+        name="run",
+        icon=ft.icons.HIKING,
+        content=ft.Container(content=ft.Text("run")),
+    ),
 }
 
 
@@ -62,8 +66,12 @@ class ChallengeContent(ft.Column):
         self.end_date = end_date
 
         self.controls = [
-            ft.Container(self.create_chart("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
-            ft.Container(self.create_table("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
+            ft.Container(
+                self.create_chart("2023-01-01 00:00:05", "2023-03-03 00:00:05"),
+            ),
+            ft.Container(
+                self.create_table("2023-01-01 00:00:05", "2023-03-03 00:00:05"),
+            ),
         ]
 
     def get_table_rows(self, start_date, end_date):
@@ -106,7 +114,9 @@ class ChallengeContent(ft.Column):
                             ft.TextButton(
                                 text=elem[0].name,
                                 data=elem[0].id,
-                                on_click=lambda e: self.app.page.go(f"/user/{e.control.data}"),
+                                on_click=lambda e: self.app.page.go(
+                                    f"/user/{e.control.data}",
+                                ),
                             ),
                         ),
                         ft.DataCell(ft.Text(elem[1])),
@@ -136,7 +146,9 @@ class ChallengeContent(ft.Column):
                 datetime: "%Y-%m-%d %H:%M:%S"
             """
             if type(date) == str:
-                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S").replace(tzinfo=tzlocal())
+                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S").replace(
+                    tzinfo=tzlocal(),
+                )
             elif type(date) == datetime:
                 return_date = date
             else:
@@ -190,7 +202,11 @@ class ChallengeContent(ft.Column):
 
                 all_activities.append(user_activities)
                 usernames_index = [user.name for user in self.app.user_handler.values()]
-                dataframe = pd.DataFrame(all_activities, columns=week_columns, index=usernames_index)
+                dataframe = pd.DataFrame(
+                    all_activities,
+                    columns=week_columns,
+                    index=usernames_index,
+                )
         return dataframe
 
     def create_chart(self, start_date, end_date):
@@ -257,12 +273,22 @@ class ChallengesView(BaseView):
             "bike": Challenge(
                 name="bike",
                 icon=ft.icons.PEDAL_BIKE,
-                content=ChallengeContent(self.app, "Ride", "2023-01-01 00:00:01", "2023-03-03 00:00:05"),
+                content=ChallengeContent(
+                    self.app,
+                    "Ride",
+                    "2023-01-01 00:00:01",
+                    "2023-03-03 00:00:05",
+                ),
             ),
             "run": Challenge(
                 name="run",
                 icon=ft.icons.HIKING,
-                content=ChallengeContent(self.app, "Run", "2023-01-01 00:00:01", "2023-03-03 00:00:05"),
+                content=ChallengeContent(
+                    self.app,
+                    "Run",
+                    "2023-01-01 00:00:01",
+                    "2023-03-03 00:00:05",
+                ),
             ),
         }
         self.nav_bar = self._create_nav_bar()
@@ -294,7 +320,9 @@ class ChallengesView(BaseView):
                     controls=[
                         ft.FilledButton(
                             text=f"{user.name}",
-                            on_click=lambda e: self.app.page.go(f"/user/{e.control.data}"),
+                            on_click=lambda e: self.app.page.go(
+                                f"/user/{e.control.data}",
+                            ),
                             data=user.id,
                         )
                         for user in self.app.user_handler.values()

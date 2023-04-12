@@ -44,8 +44,16 @@ class UserView(BaseView):
         self.controls.extend(
             [
                 ft.Text(self.user.name),
-                ft.Container(self.create_chart("2023-01-01 00:00:05", "2023-03-03 00:00:05", "frame")),
-                ft.Container(self.create_table("2023-01-01 00:00:05", "2023-03-03 00:00:05")),
+                ft.Container(
+                    self.create_chart(
+                        "2023-01-01 00:00:05",
+                        "2023-03-03 00:00:05",
+                        "frame",
+                    ),
+                ),
+                ft.Container(
+                    self.create_table("2023-01-01 00:00:05", "2023-03-03 00:00:05"),
+                ),
             ],
         )
 
@@ -147,7 +155,9 @@ class UserView(BaseView):
                 datetime: "%Y-%m-%d %H:%M:%S"
             """
             if type(date) == str:
-                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S").replace(tzinfo=tzlocal())
+                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S").replace(
+                    tzinfo=tzlocal(),
+                )
             elif type(date) == datetime:
                 return_date = date
             else:
@@ -249,7 +259,11 @@ class UserView(BaseView):
 
                 all_activities.append(user_week_activities)
 
-            dataframe = pd.DataFrame(all_activities, index=week_columns, columns=sport_types).transpose()
+            dataframe = pd.DataFrame(
+                all_activities,
+                index=week_columns,
+                columns=sport_types,
+            ).transpose()
 
         return dataframe
 
