@@ -1,6 +1,7 @@
 """Module holding ChallengesView."""
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
@@ -8,6 +9,7 @@ from typing import TYPE_CHECKING
 import flet as ft
 import pandas as pd
 import plotly.express as px
+from dateutil.tz import tzlocal
 from flet.plotly_chart import PlotlyChart
 
 from .base_view import BaseView
@@ -134,11 +136,11 @@ class ChallengeContent(ft.Column):
                 datetime: "%Y-%m-%d %H:%M:%S"
             """
             if type(date) == str:
-                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+                return_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S").replace(tzinfo=tzlocal())
             elif type(date) == datetime:
                 return_date = date
             else:
-                print("ERROR: Date is neither str nor datetime format")
+                logging.error("ERROR: Date is neither str nor datetime format")
 
             return return_date
 
