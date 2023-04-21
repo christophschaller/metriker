@@ -54,8 +54,8 @@ class ChallengeContent(ft.Column):
         Args:
             app (_type_): _description_
             sport_type (str): sport_type sting from strava activity sport_type e.g. "Ride", "Run",..
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            start_date (datetime): start_date
+            end_date (datetime): end_date
             *args(_type_):something
             **kwargs(_type_):something
         """
@@ -78,8 +78,8 @@ class ChallengeContent(ft.Column):
         """Returns flet datarows for a flet table.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            start_date (datetime): start_date
+            end_date (datetime): end_date
 
         Returns:
             get_table_rows(list): list of ft.DataRow
@@ -129,8 +129,8 @@ class ChallengeContent(ft.Column):
         """Returns all values for a plot with plotly in a pd dataframe format.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            start_date (datetime): start_date
+            end_date (datetime): end_date
 
         Returns:
             get_sport_plot(pandas dataframe): dataframe for plotly chart
@@ -212,11 +212,11 @@ class ChallengeContent(ft.Column):
         """Uses the function get_sport_plot to generate a dataframe and creates a PlotlyChart with that.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date.
+            start_date (datetime): start_date
+            end_date (datetime): end_date.
 
         Returns:
-            (str in format "%Y-%m-%d %H:%M:%S")(PlotlyChart): chart with values
+            (datetime)(PlotlyChart): chart with values
         """
         return PlotlyChart(
             px.line(
@@ -232,8 +232,8 @@ class ChallengeContent(ft.Column):
         """Creates a ft.DataTable with get_table_rows function.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            start_date (datetime): start_date
+            end_date (datetime): end_date
 
         Returns:
             create_table(ft.DataTable): datatable for highscores

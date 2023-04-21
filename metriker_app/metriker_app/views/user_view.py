@@ -64,8 +64,8 @@ class UserView(BaseView):
         """Creates a ft.DataTable with get_table_rows function.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            start_date (datetime): start_date
+            end_date (datetime): end_date
 
         Returns:
             create_table(ft.DataTable): datatable for highscores
@@ -83,8 +83,8 @@ class UserView(BaseView):
         """Returns flet datarows for a flet table.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            start_date (datetime): start_date
+            end_date (datetime): end_date
 
         Returns:
             get_table_rows(list): list of ft.DataRow
@@ -141,8 +141,8 @@ class UserView(BaseView):
         """Returns all values for a plot with plotly in a pd dataframe format.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date
+            start_date (datetime): start_date
+            end_date (datetime): end_date
 
         Returns:
             get_sport_plot(pandas dataframe): dataframe for plotly chart
@@ -234,11 +234,11 @@ class UserView(BaseView):
         """Uses the function get_sport_plot to generate a dataframe and creates a PlotlyChart with that.
 
         Args:
-            start_date (str in format "%Y-%m-%d %H:%M:%S"): start_date
-            end_date (str in format "%Y-%m-%d %H:%M:%S"): end_date.
+            start_date (datetime): start_date
+            end_date (datetime): end_date.
 
         Returns:
-            (str in format "%Y-%m-%d %H:%M:%S")(PlotlyChart): chart with values
+            (datetime)(PlotlyChart): chart with values
         """
         return PlotlyChart(
             px.line(
