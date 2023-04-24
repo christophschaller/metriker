@@ -45,7 +45,10 @@ class DataPrivacyView(BaseView):
             [
                 ft.Container(
                     content=ft.Column(
-                        controls=[self.create_download_button(), self.create_delete_button()],
+                        controls=[
+                            self.create_download_button(),
+                            self.create_delete_button(),
+                        ],
                         scroll=ft.ScrollMode.AUTO,
                         expand=True,
                     ),
