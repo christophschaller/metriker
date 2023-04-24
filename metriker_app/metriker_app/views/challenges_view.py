@@ -13,29 +13,6 @@ if TYPE_CHECKING:
     from ..metriker import Metriker
 
 
-@dataclass
-class Challenge:
-    """Temporary Dataclass to define a challenge."""
-
-    name: str
-    icon: str
-    content: ft.Control
-
-
-CHALLENGES = {
-    "bike": Challenge(
-        name="bike",
-        icon=ft.icons.PEDAL_BIKE,
-        content=ft.Container(content=ft.Text("Bike")),
-    ),
-    "run": Challenge(
-        name="run",
-        icon=ft.icons.HIKING,
-        content=ft.Container(content=ft.Text("run")),
-    ),
-}
-
-
 class ChallengesView(BaseView):
     """ChallengesView expands the BaseView with a NavBar on the bottom of the page.
 
